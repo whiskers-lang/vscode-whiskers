@@ -1,0 +1,24 @@
+{{! Simple Mustache example }}
+<h1>{{title}}</h1>
+<p>{{description}}</p>
+
+{{#user}}
+<p>Welcome, {{name}}.</p>
+{{/user}}
+{{^user}}
+<p>Welcome, guest.</p>
+{{/user}}
+
+<ul>
+{{#items}}
+    <li>{{name}} - {{price}}</li>
+{{/items}}
+</ul>
+{{^items}}
+<p>No items available.</p>
+{{/items}}
+
+<p>Escaped: {{message_html}}</p>
+<p>Unescaped: {{{message_html}}}</p>
+
+{{> mustache-footer}}

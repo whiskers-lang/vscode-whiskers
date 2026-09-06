@@ -1,0 +1,6 @@
+{{#notice}}
+<aside class="notice notice-{{kind}}">
+    <strong>{{title}}</strong>
+    <p>{{message}}</p>
+</aside>
+{{/notice}}

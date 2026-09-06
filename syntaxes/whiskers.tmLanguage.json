@@ -1,0 +1,124 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Whiskers",
+  "scopeName": "text.whiskers",
+  "fileTypes": ["whiskers", "wsk"],
+  "patterns": [
+    { "include": "#comment" },
+    { "include": "#set-delimiter" },
+    { "include": "#triple" },
+    { "include": "#unescaped" },
+    { "include": "#section-close" },
+    { "include": "#section-open" },
+    { "include": "#partial" },
+    { "include": "#variable-meta" },
+    { "include": "#variable" },
+    { "include": "#inactive-fallback" },
+    { "include": "text.html.basic" }
+  ],
+  "repository": {
+    "comment": {
+      "name": "comment.block.mustache",
+      "begin": "\\{\\{!-?-?",
+      "end": "-?-?\\}\\}",
+      "beginCaptures": { "0": { "name": "punctuation.definition.comment.begin.mustache" } },
+      "endCaptures":   { "0": { "name": "punctuation.definition.comment.end.mustache" } }
+    },
+    "set-delimiter": {
+      "name": "meta.preprocessor.mustache",
+      "match": "(\\{\\{)(=)(.+?)(=)(\\}\\})",
+      "captures": {
+        "1": { "name": "support.constant.handlebars" },
+        "2": { "name": "keyword.operator.mustache" },
+        "3": { "name": "string.unquoted.mustache" },
+        "4": { "name": "keyword.operator.mustache" },
+        "5": { "name": "support.constant.handlebars" }
+      }
+    },
+    "triple": {
+      "match": "(\\{\\{\\{)\\s*([\\w.][\\w./\\-]*)\\s*(\\}\\}\\})",
+      "captures": {
+        "1": { "name": "support.constant.handlebars" },
+        "2": { "name": "variable.other.mustache" },
+        "3": { "name": "support.constant.handlebars" }
+      }
+    },
+    "unescaped": {
+      "match": "(\\{\\{)(&)\\s*([\\w.][\\w./\\-]*)\\s*(\\}\\})",
+      "captures": {
+        "1": { "name": "support.constant.handlebars" },
+        "2": { "name": "keyword.operator.mustache" },
+        "3": { "name": "variable.other.mustache" },
+        "4": { "name": "support.constant.handlebars" }
+      }
+    },
+    "section-close": {
+      "match": "(\\{\\{)(/)\\s*([\\w.@][\\w./\\-@]*)\\s*(\\}\\})",
+      "captures": {
+        "1": { "name": "support.constant.handlebars" },
+        "2": { "name": "keyword.control.mustache" },
+        "3": { "name": "variable.other.mustache" },
+        "4": { "name": "support.constant.handlebars" }
+      }
+    },
+    "section-open": {
+      "begin": "(\\{\\{)([#^*%?<~$])\\s*([\\w.@][\\w./\\-@]*)",
+      "end": "(\\}\\})",
+      "beginCaptures": {
+        "1": { "name": "support.constant.handlebars" },
+        "2": { "name": "keyword.control.mustache" },
+        "3": { "name": "variable.other.mustache" }
+      },
+      "endCaptures": {
+        "1": { "name": "support.constant.handlebars" }
+      },
+      "patterns": [
+        { "include": "#section-arguments" }
+      ]
+    },
+    "section-arguments": {
+      "patterns": [
+        { "match": ":([\\w.][\\w./\\-]*)", "captures": { "1": { "name": "variable.parameter.mustache" } } },
+        { "name": "string.quoted.double.mustache", "match": "\"[^\"]*\"" },
+        { "name": "string.quoted.single.mustache", "match": "'[^']*'" },
+        { "name": "constant.numeric.mustache", "match": "\\d+(?:\\.\\d+)?" },
+        {
+          "match": "(\\*)([\\w.@][\\w./@\\-]*)",
+          "captures": {
+            "1": { "name": "keyword.operator.mustache" },
+            "2": { "name": "variable.other.mustache" }
+          }
+        },
+        { "name": "string.unquoted.mustache", "match": "[\\w][\\w-]*" }
+      ]
+    },
+    "partial": {
+      "match": "(\\{\\{)(>\\*?)\\s*([\\w.*][\\w./\\-]*)\\s*(\\}\\})",
+      "captures": {
+        "1": { "name": "support.constant.handlebars" },
+        "2": { "name": "keyword.operator.mustache" },
+        "3": { "name": "entity.name.function.mustache" },
+        "4": { "name": "support.constant.handlebars" }
+      }
+    },
+    "variable-meta": {
+      "match": "(\\{\\{)\\s*(@[\\w.][\\w./\\-]*)\\s*(\\}\\})",
+      "captures": {
+        "1": { "name": "support.constant.handlebars" },
+        "2": { "name": "support.variable.mustache" },
+        "3": { "name": "support.constant.handlebars" }
+      }
+    },
+    "variable": {
+      "match": "(\\{\\{)\\s*([\\w.][\\w./\\-]*)\\s*(\\}\\})",
+      "captures": {
+        "1": { "name": "support.constant.handlebars" },
+        "2": { "name": "variable.other.mustache" },
+        "3": { "name": "support.constant.handlebars" }
+      }
+    },
+    "inactive-fallback": {
+      "match": "\\{\\{.*?\\}\\}"
+    }
+  }
+}

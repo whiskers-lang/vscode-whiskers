@@ -1,0 +1,19 @@
+{{! Simple Whiskers example }}
+<h1>{{title}}</h1>
+
+{{#profile :user}}
+<p>{{user.name}} ({{user.role}})</p>
+{{/profile}}
+
+<ol>
+{{*tasks :task}}
+    <li>{{@number}}. {{task.title}}{{#task.done}} [done]{{/task.done}}</li>
+{{/tasks}}
+</ol>
+
+{{%optional_note}}<p>No optional note was supplied.</p>{{/optional_note}}
+{{?middle_name}}<p>Middle name is null.</p>{{/middle_name}}
+
+{{#uppercase}}Hello, {{profile.name}}!{{/uppercase}}
+
+{{> footer}}

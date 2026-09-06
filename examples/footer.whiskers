@@ -1,0 +1,3 @@
+<footer>
+    <small>&copy; {{@root.site.year}} {{@root.site.name}}</small>
+</footer>

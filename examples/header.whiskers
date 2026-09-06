@@ -1,0 +1,8 @@
+<header class="site-header">
+	<a href="/">{{@root.site.name}}</a>
+	<nav aria-label="Primary">
+		{{*@root.site.navigation :link}}
+		<a href="{{link.href}}"{{#link.current}} aria-current="page"{{/link.current}}>{{link.label}}</a>
+		{{/@root.site.navigation}}
+	</nav>
+</header>

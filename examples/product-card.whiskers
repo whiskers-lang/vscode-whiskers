@@ -1,0 +1,6 @@
+<article class="product" data-sku="{{product.sku}}">
+    <h3>{{product.name}}</h3>
+    {{#product.description}}<p>{{product.description}}</p>{{/product.description}}
+    {{^product.description}}<p>No description available.</p>{{/product.description}}
+    <strong>{{catalog.currency}}{{product.price}}</strong>
+</article>

@@ -1,0 +1,67 @@
+{{! Advanced Whiskers example }}
+{{< base-layout}}
+{{$ title}}{{page.title}}{{/title}}
+{{$ content}}
+{{> header}}
+
+<main>
+	<h1>{{page.title}}</h1>
+	<div class="summary">{{& page.summary_html}}</div>
+
+	{{! Aliases remain available through deeply nested sections }}
+	{{#catalog :catalog}}
+	{{*catalog.groups :group}}
+	<section id="group-{{group.slug}}">
+		<h2>{{group.name}} <small>{{@number}} / {{@length}}</small></h2>
+		{{*group.products :product}}
+		{{> product-card}}
+		{{#product.options :option}}
+		<span>{{catalog.currency}}{{option.price}} - {{option.name}}</span>
+		{{/product.options}}
+		{{^@last}}<hr>{{/@last}}
+		{{/group.products}}
+	</section>
+	{{/catalog.groups}}
+	{{/catalog}}
+
+	{{! Presence, absence, nullness, and truthiness are separate checks }}
+	{{*account}}<p>Account key is present.</p>{{/account}}
+	{{%account}}<p>Account key is absent.</p>{{/account}}
+	{{~account}}<p>Account is not null.</p>{{/account}}
+	{{?account}}<p>Account is null.</p>{{/account}}
+	{{#account.active}}<p>Account is active.</p>{{/account.active}}
+	{{^account.active}}<p>Account is inactive.</p>{{/account.active}}
+
+	{{! Static and dynamic partials }}
+	{{> notice}}
+	{{>* selected_card}}
+
+	{{! Lambdas: interpolation, nested raw text, and typed arguments }}
+	<p>Build: {{build_label}}</p>
+	{{#markdown}}
+	### {{page.callout_title}}
+
+	{{#emphasis}}{{page.callout_text}}{{/emphasis}}
+	{{/markdown}}
+	{{#truncate 120}}{{page.long_description}}{{/truncate}}
+	{{#truncate *page.preview_length}}{{page.long_description}}{{/truncate}}
+	{{#wrap aside 1}}{{page.sidebar}}{{/wrap}}
+	{{#wrap "aside" 2}}{{page.sidebar}}{{/wrap}}
+	{{#wrap aside *page.sidebar_depth}}{{page.sidebar}}{{/wrap}}
+	{{#wrap *page.sidebar_tag *page.sidebar_depth}}{{page.sidebar}}{{/wrap}}
+
+	{{! Change delimiters, use unescaped output, then restore defaults }}
+	{{=<% %>=}}
+	<%#campaign :campaign%>
+	<aside data-id="<%campaign.id%>">
+		<h2><%campaign.title%></h2>
+		<%& campaign.body_html %>
+		<p>Site: <%@root.site.name%></p>
+	</aside>
+	<%/campaign%>
+	<%={{ }}=%>
+</main>
+
+{{> footer}}
+{{/content}}
+{{/base-layout}}

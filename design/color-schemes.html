@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Whiskers color studies</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    background: #101112;
+    color: #f3f1ea;
+    font-family: Georgia, "Times New Roman", serif;
+}
+main { width: min(1440px, 100%); padding: 44px 36px 52px; }
+header { display: flex; align-items: end; justify-content: space-between; margin-bottom: 28px; }
+h1 { margin: 0; font-size: 32px; font-weight: 500; letter-spacing: 0; }
+.subtitle { margin: 6px 0 0; color: #aaa8a1; font: 14px/1.4 "Segoe UI", sans-serif; }
+.note { color: #85847e; font: 12px/1.4 "Segoe UI", sans-serif; text-align: right; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.scheme { min-width: 0; overflow: hidden; border: 1px solid var(--frame); border-radius: 6px; background: var(--bg); color: var(--host); }
+.scheme-head { display: flex; justify-content: space-between; align-items: baseline; padding: 15px 18px 13px; border-bottom: 1px solid var(--frame); }
+.scheme h2 { margin: 0; color: var(--title); font: 600 15px/1 "Segoe UI", sans-serif; letter-spacing: 0; }
+.scheme-number { color: var(--muted); font: 11px/1 "Cascadia Code", Consolas, monospace; }
+.code { padding: 18px 20px 20px; font: 12px/1.62 "Cascadia Code", Consolas, monospace; white-space: pre; }
+.comment { color: var(--comment); font-style: italic; }
+.delim { color: var(--delimiter); }
+.sigil { color: var(--sigil); font-weight: 700; }
+.section { color: var(--section); }
+.variable { color: var(--variable); }
+.meta { color: var(--metadata); }
+.partial { color: var(--partial); }
+.lambda { color: var(--lambda); }
+.alias { color: var(--alias); }
+.string { color: var(--string); }
+.punctuation { color: var(--punctuation); }
+.legend { display: flex; flex-wrap: wrap; gap: 7px 14px; padding: 0 20px 18px; color: var(--muted); font: 11px/1.2 "Segoe UI", sans-serif; }
+.legend span::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 50%; background: currentColor; }
+.legend .l-delim { color: var(--delimiter); } .legend .l-sigil { color: var(--sigil); }
+.legend .l-section { color: var(--section); } .legend .l-variable { color: var(--variable); }
+.legend .l-meta { color: var(--metadata); } .legend .l-partial { color: var(--partial); }
+.legend .l-lambda { color: var(--lambda); }
+
+.ember {
+    --bg: #1d1b19; --frame: #39342f; --host: #d7d1c8; --title: #f1e9dc; --muted: #8e867d;
+    --comment: #728866; --delimiter: #8b8178; --sigil: #ff7a59; --section: #efb45d;
+    --variable: #79c9c3; --metadata: #a8c66c; --partial: #c49bd8; --lambda: #ee8eae;
+    --alias: #f0ca75; --string: #b9cb8b; --punctuation: #aaa29a;
+}
+.harbor {
+    --bg: #161a1d; --frame: #30383c; --host: #ccd5d7; --title: #edf5f4; --muted: #78898e;
+    --comment: #6e987d; --delimiter: #718087; --sigil: #f06f68; --section: #55b8b1;
+    --variable: #e2be6f; --metadata: #8cc7ee; --partial: #b6a0df; --lambda: #ed94bd;
+    --alias: #df9f65; --string: #9bc47d; --punctuation: #9caaae;
+}
+.paper {
+    --bg: #f5f1e8; --frame: #d4ccbd; --host: #35322e; --title: #1e1c19; --muted: #7b746b;
+    --comment: #59815e; --delimiter: #8c8376; --sigil: #b33a32; --section: #9a5a12;
+    --variable: #087b80; --metadata: #416da3; --partial: #7752a0; --lambda: #ad3f71;
+    --alias: #8f4b16; --string: #507030; --punctuation: #6f6961;
+}
+.signal {
+    --bg: #fbfcfa; --frame: #cbd1cd; --host: #202522; --title: #111512; --muted: #68716b;
+    --comment: #397549; --delimiter: #68716b; --sigil: #c12631; --section: #006b62;
+    --variable: #9b5800; --metadata: #1669a8; --partial: #6240a0; --lambda: #a72b68;
+    --alias: #7c4d00; --string: #4e7429; --punctuation: #5e6761;
+}
+</style>
+</head>
+<body>
+<main>
+<header>
+    <div><h1>Whiskers color studies</h1><p class="subtitle">Template syntax has its own visual language, independent of the surrounding content.</p></div>
+    <div class="note">Same syntax, four palettes<br>Host text remains neutral</div>
+</header>
+<div class="grid">
+<section class="scheme ember" id="ember"><div class="scheme-head"><h2>Ember &amp; Sea Glass</h2><span class="scheme-number">ember / dark target</span></div><div class="code"><span class="comment">{{! Nested aliases and metadata }}</span>
+<span class="delim">{{</span><span class="sigil">#</span><span class="section">catalog</span> <span class="punctuation">:</span><span class="alias">catalog</span><span class="delim">}}</span>
+  <span class="delim">{{</span><span class="sigil">*</span><span class="section">catalog.groups</span> <span class="punctuation">:</span><span class="alias">group</span><span class="delim">}}</span>
+    Group <span class="delim">{{</span><span class="variable">group.name</span><span class="delim">}}</span> · <span class="delim">{{</span><span class="meta">@number</span><span class="delim">}}</span>/<span class="delim">{{</span><span class="meta">@length</span><span class="delim">}}</span>
+    <span class="delim">{{</span><span class="sigil">&gt;</span> <span class="partial">product-card</span><span class="delim">}}</span>
+  <span class="delim">{{</span><span class="sigil">/</span><span class="section">catalog.groups</span><span class="delim">}}</span>
+<span class="delim">{{</span><span class="sigil">/</span><span class="section">catalog</span><span class="delim">}}</span>
+
+<span class="delim">{{</span><span class="sigil">#</span><span class="lambda">truncate</span> <span class="string">80</span><span class="delim">}}</span><span class="delim">{{</span><span class="variable">description</span><span class="delim">}}</span><span class="delim">{{</span><span class="sigil">/</span><span class="lambda">truncate</span><span class="delim">}}</span></div><div class="legend"><span class="l-delim">delimiter</span><span class="l-sigil">sigil</span><span class="l-section">section</span><span class="l-variable">value</span><span class="l-meta">metadata</span><span class="l-partial">partial</span><span class="l-lambda">lambda</span></div></section>
+
+<section class="scheme harbor" id="harbor"><div class="scheme-head"><h2>Harbor Signal</h2><span class="scheme-number">harbor / dark target</span></div><div class="code"><span class="comment">{{! Nested aliases and metadata }}</span>
+<span class="delim">{{</span><span class="sigil">#</span><span class="section">catalog</span> <span class="punctuation">:</span><span class="alias">catalog</span><span class="delim">}}</span>
+  <span class="delim">{{</span><span class="sigil">*</span><span class="section">catalog.groups</span> <span class="punctuation">:</span><span class="alias">group</span><span class="delim">}}</span>
+    Group <span class="delim">{{</span><span class="variable">group.name</span><span class="delim">}}</span> · <span class="delim">{{</span><span class="meta">@number</span><span class="delim">}}</span>/<span class="delim">{{</span><span class="meta">@length</span><span class="delim">}}</span>
+    <span class="delim">{{</span><span class="sigil">&gt;</span> <span class="partial">product-card</span><span class="delim">}}</span>
+  <span class="delim">{{</span><span class="sigil">/</span><span class="section">catalog.groups</span><span class="delim">}}</span>
+<span class="delim">{{</span><span class="sigil">/</span><span class="section">catalog</span><span class="delim">}}</span>
+
+<span class="delim">{{</span><span class="sigil">#</span><span class="lambda">truncate</span> <span class="string">80</span><span class="delim">}}</span><span class="delim">{{</span><span class="variable">description</span><span class="delim">}}</span><span class="delim">{{</span><span class="sigil">/</span><span class="lambda">truncate</span><span class="delim">}}</span></div><div class="legend"><span class="l-delim">delimiter</span><span class="l-sigil">sigil</span><span class="l-section">section</span><span class="l-variable">value</span><span class="l-meta">metadata</span><span class="l-partial">partial</span><span class="l-lambda">lambda</span></div></section>
+
+<section class="scheme paper" id="paper"><div class="scheme-head"><h2>Paper Ledger</h2><span class="scheme-number">paper / light target</span></div><div class="code"><span class="comment">{{! Nested aliases and metadata }}</span>
+<span class="delim">{{</span><span class="sigil">#</span><span class="section">catalog</span> <span class="punctuation">:</span><span class="alias">catalog</span><span class="delim">}}</span>
+  <span class="delim">{{</span><span class="sigil">*</span><span class="section">catalog.groups</span> <span class="punctuation">:</span><span class="alias">group</span><span class="delim">}}</span>
+    Group <span class="delim">{{</span><span class="variable">group.name</span><span class="delim">}}</span> · <span class="delim">{{</span><span class="meta">@number</span><span class="delim">}}</span>/<span class="delim">{{</span><span class="meta">@length</span><span class="delim">}}</span>
+    <span class="delim">{{</span><span class="sigil">&gt;</span> <span class="partial">product-card</span><span class="delim">}}</span>
+  <span class="delim">{{</span><span class="sigil">/</span><span class="section">catalog.groups</span><span class="delim">}}</span>
+<span class="delim">{{</span><span class="sigil">/</span><span class="section">catalog</span><span class="delim">}}</span>
+
+<span class="delim">{{</span><span class="sigil">#</span><span class="lambda">truncate</span> <span class="string">80</span><span class="delim">}}</span><span class="delim">{{</span><span class="variable">description</span><span class="delim">}}</span><span class="delim">{{</span><span class="sigil">/</span><span class="lambda">truncate</span><span class="delim">}}</span></div><div class="legend"><span class="l-delim">delimiter</span><span class="l-sigil">sigil</span><span class="l-section">section</span><span class="l-variable">value</span><span class="l-meta">metadata</span><span class="l-partial">partial</span><span class="l-lambda">lambda</span></div></section>
+
+<section class="scheme signal" id="signal"><div class="scheme-head"><h2>Signal on White</h2><span class="scheme-number">signal / light target</span></div><div class="code"><span class="comment">{{! Nested aliases and metadata }}</span>
+<span class="delim">{{</span><span class="sigil">#</span><span class="section">catalog</span> <span class="punctuation">:</span><span class="alias">catalog</span><span class="delim">}}</span>
+  <span class="delim">{{</span><span class="sigil">*</span><span class="section">catalog.groups</span> <span class="punctuation">:</span><span class="alias">group</span><span class="delim">}}</span>
+    Group <span class="delim">{{</span><span class="variable">group.name</span><span class="delim">}}</span> · <span class="delim">{{</span><span class="meta">@number</span><span class="delim">}}</span>/<span class="delim">{{</span><span class="meta">@length</span><span class="delim">}}</span>
+    <span class="delim">{{</span><span class="sigil">&gt;</span> <span class="partial">product-card</span><span class="delim">}}</span>
+  <span class="delim">{{</span><span class="sigil">/</span><span class="section">catalog.groups</span><span class="delim">}}</span>
+<span class="delim">{{</span><span class="sigil">/</span><span class="section">catalog</span><span class="delim">}}</span>
+
+<span class="delim">{{</span><span class="sigil">#</span><span class="lambda">truncate</span> <span class="string">80</span><span class="delim">}}</span><span class="delim">{{</span><span class="variable">description</span><span class="delim">}}</span><span class="delim">{{</span><span class="sigil">/</span><span class="lambda">truncate</span><span class="delim">}}</span></div><div class="legend"><span class="l-delim">delimiter</span><span class="l-sigil">sigil</span><span class="l-section">section</span><span class="l-variable">value</span><span class="l-meta">metadata</span><span class="l-partial">partial</span><span class="l-lambda">lambda</span></div></section>
+</div>
+</main>
+</body>
+</html>

@@ -1,0 +1,60 @@
+{{! Advanced Mustache example }}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{{site.name}} | {{page.title}}</title>
+</head>
+<body>
+    {{> mustache-header}}
+
+    <main>
+        <h1>{{page.title}}</h1>
+        <p>{{page.summary}}</p>
+        <div class="prose">{{{page.body_html}}}</div>
+
+        {{! Nested sections and current-value tags }}
+        {{#catalog}}
+        <section aria-labelledby="catalog-heading">
+            <h2 id="catalog-heading">{{heading}}</h2>
+            {{#groups}}
+            <section class="group">
+                <h3>{{name}}</h3>
+                {{#items}}
+                <article data-sku="{{sku}}">
+                    <h4>{{name}}</h4>
+                    {{#description}}<p>{{description}}</p>{{/description}}
+                    {{^description}}<p>Description coming soon.</p>{{/description}}
+                    {{#tags}}<span class="tag">{{.}}</span>{{/tags}}
+                </article>
+                {{/items}}
+                {{^items}}
+                <p>No items in this group.</p>
+                {{/items}}
+            </section>
+            {{/groups}}
+        </section>
+        {{/catalog}}
+
+        {{! Interpolation and section lambdas supplied by the render context }}
+        <p>Generated at {{timestamp}}</p>
+        {{#markdown}}
+        ## {{page.callout_title}}
+
+        {{page.callout_text}}
+        {{/markdown}}
+
+        {{! Custom delimiters are useful inside JavaScript and CSS templates }}
+        {{=<% %>=}}
+        <script type="application/json">
+        {"title":"<%page.title%>","featured":<%featured_count%>}
+        </script>
+        <%#campaign%>
+        <p class="campaign"><%name%>: <%& message_html%></p>
+        <%/campaign%>
+        <%={{ }}=%>
+    </main>
+
+    {{> mustache-footer}}
+</body>
+</html>

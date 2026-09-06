@@ -1,0 +1,142 @@
+{
+  "name": "whiskers",
+  "displayName": "Whiskers",
+  "description": "Formatter and language support for Mustache and Whiskers templates",
+  "version": "0.0.1",
+  "publisher": "whiskers-lang",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/whiskers-lang/vscode-whiskers.git"
+  },
+  "bugs": {
+    "url": "https://github.com/whiskers-lang/vscode-whiskers/issues"
+  },
+  "homepage": "https://github.com/whiskers-lang/vscode-whiskers",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Formatters",
+    "Programming Languages"
+  ],
+  "files": [
+    "out/**/*.js",
+    "out/**/*.js.map",
+    "icons/**",
+    "syntaxes/**",
+    "language-configuration.json",
+    "ThirdPartyNotices.txt",
+    "README.md"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "whiskers",
+        "aliases": ["Whiskers", "whiskers"],
+        "extensions": [".whiskers", ".wsk"],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icons/mustache.svg",
+          "dark": "./icons/mustache.svg"
+        }
+      },
+      {
+        "id": "mustache",
+        "aliases": ["Mustache", "mustache"],
+        "extensions": [".mustache", ".mst"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "whiskers",
+        "scopeName": "text.whiskers",
+        "path": "./syntaxes/whiskers.tmLanguage.json"
+      },
+      {
+        "language": "mustache",
+        "scopeName": "text.whiskers",
+        "path": "./syntaxes/whiskers.tmLanguage.json"
+      }
+    ],
+    "semanticTokenScopes": [
+      {
+        "scopes": {
+          "mustacheDelimiter": ["support.constant.handlebars"],
+          "mustacheSigil": ["keyword.control.mustache"],
+          "mustacheSection": ["variable.other.mustache"],
+          "mustacheVariable": ["variable.other.mustache"],
+          "mustacheMetadata": ["support.variable.mustache"],
+          "mustachePartial": ["support.function.partial.mustache"],
+          "mustacheLambda": ["support.function.mustache"],
+          "mustacheStringArgument": ["string.quoted.double.mustache"],
+          "mustacheNumberArgument": ["constant.numeric.mustache"]
+        }
+      }
+    ],
+    "semanticTokenTypes": [
+      { "id": "mustacheDelimiter", "superType": "operator", "description": "A Mustache tag delimiter." },
+      { "id": "mustacheSigil", "superType": "keyword", "description": "A Mustache tag sigil." },
+      { "id": "mustacheSection", "superType": "variable", "description": "A Mustache section key." },
+      { "id": "mustacheVariable", "superType": "variable", "description": "A Mustache variable." },
+      { "id": "mustacheMetadata", "superType": "enumMember", "description": "A Whiskers metadata variable." },
+      { "id": "mustachePartial", "superType": "function", "description": "A Mustache partial template." },
+      { "id": "mustacheLambda", "superType": "function", "description": "A Whiskers lambda invocation." },
+      { "id": "mustacheStringArgument", "superType": "string", "description": "A quoted or unquoted Whiskers lambda string argument." },
+      { "id": "mustacheNumberArgument", "superType": "number", "description": "A Whiskers lambda numeric argument." }
+    ],
+    "configuration": {
+      "title": "Whiskers",
+      "properties": {
+        "whiskers.colorScheme": {
+          "type": "string",
+          "enum": ["theme", "ember", "harbor", "paper", "signal"],
+          "enumItemLabels": ["Automatic", "Ember & Sea Glass", "Harbor Signal", "Paper Ledger", "Signal on White"],
+          "markdownEnumDescriptions": [
+            "Use Ember with dark themes and Paper with light themes.",
+            "Use the warm dark palette shown in the color study.",
+            "Use the cool dark palette shown in the color study.",
+            "Use the warm light palette shown in the color study.",
+            "Use the crisp light palette shown in the color study."
+          ],
+          "default": "theme",
+          "scope": "resource",
+          "markdownDescription": "Controls Whiskers syntax colors. `theme` automatically selects Ember for dark themes and Paper for light themes."
+        },
+        "whiskers.templateRoots": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "uniqueItems": true,
+          "scope": "resource",
+          "markdownDescription": "Directories searched first for partial definitions. Relative paths are resolved from the containing workspace folder."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "clean": "node -e \"require('fs').rmSync('out', { recursive: true, force: true })\"",
+    "compile": "npm run clean && tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src tests scripts",
+    "test": "npm run compile && node --test tests/*.test.js",
+    "check": "npm run lint && npm test",
+    "package:check": "npm run check && vsce ls --no-dependencies | node scripts/validate-package.js",
+    "package:vsix": "npm run package:check && vsce package --no-dependencies --skip-license"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@types/vscode": "^1.90.0",
+    "@types/node": "20.x",
+    "@vscode/vsce": "^3.0.0",
+    "eslint": "^9.0.0",
+    "typescript-eslint": "^8.0.0",
+    "typescript": "^5.4.0"
+  }
+}
