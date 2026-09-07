@@ -3,6 +3,7 @@ const test = require('node:test');
 const {
     METADATA_COMPLETIONS,
     SIGIL_COMPLETIONS,
+    metadataCompletionsAt,
     shouldOfferMetadataCompletions,
     shouldOfferSigilCompletions,
 } = require('../out/completionData');
@@ -57,6 +58,15 @@ test('offers metadata after @ in variable and section tags', () => {
 test('offers metadata with active custom delimiters', () => {
     const template = '{{=<% %>=}}<%@';
     assert.equal(shouldOfferMetadataCompletions(template, template.length), true);
+});
+
+test('offers iteration metadata after an alias qualifier', () => {
+    const template = '{{@row.';
+    assert.equal(shouldOfferMetadataCompletions(template, template.length), true);
+    assert.deepEqual(
+        metadataCompletionsAt(template, template.length).map(completion => completion.name),
+        ['index', 'number', 'first', 'last', 'length'],
+    );
 });
 
 test('does not offer metadata outside a tag or after a keypath separator', () => {

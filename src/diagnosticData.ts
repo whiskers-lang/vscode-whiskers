@@ -1,10 +1,12 @@
 import { parse, Tag } from './parser';
+import { METADATA_COMPLETIONS } from './completionData';
 
 export type DiagnosticCode =
     | 'unmatched-close'
     | 'unclosed-section'
     | 'mismatched-section'
     | 'malformed-delimiter-change'
+    | 'duplicate-alias'
     | 'alias-out-of-scope';
 
 export interface DiagnosticData {
@@ -14,6 +16,12 @@ export interface DiagnosticData {
     length: number;
     severity: 'error' | 'warning';
 }
+
+const METADATA_NAMES = new Set(METADATA_COMPLETIONS.map(metadata => metadata.name));
+const ITERATION_METADATA_NAMES = new Set(
+    METADATA_COMPLETIONS.filter(metadata => metadata.name !== 'root')
+        .map(metadata => metadata.name),
+);
 
 export function collectDiagnostics(text: string): DiagnosticData[] {
     const tags = parse(text);
@@ -123,21 +131,59 @@ function collectAliasDiagnostics(tags: Tag[]): DiagnosticData[] {
     const diagnostics: DiagnosticData[] = [];
 
     for (const tag of tags) {
-        if (tag.kind !== 'variable' && tag.kind !== 'triple' && tag.kind !== 'unescaped') continue;
-        const aliasName = tag.name.split('.')[0];
-        if (!aliasNames.has(aliasName)) continue;
-        if (tag.scopeAliases.some(alias => alias.name === aliasName)) continue;
+        for (const alias of tag.aliases) {
+            if (METADATA_NAMES.has(alias.name)) {
+                diagnostics.push({
+                    code: 'duplicate-alias',
+                    message: `Alias "${alias.name}" conflicts with metadata "@${alias.name}".`,
+                    offset: alias.offset,
+                    length: alias.length,
+                    severity: 'error',
+                });
+                continue;
+            }
+            if (!tag.scopeAliases.some(active => active.name === alias.name)) continue;
+            diagnostics.push({
+                code: 'duplicate-alias',
+                message: `Alias "${alias.name}" duplicates an alias from an enclosing section.`,
+                offset: alias.offset,
+                length: alias.length,
+                severity: 'error',
+            });
+        }
+
+        const reference = aliasReference(tag);
+        if (!reference || !aliasNames.has(reference.name)) continue;
+        if (tag.scopeAliases.some(alias => alias.name === reference.name)) continue;
 
         diagnostics.push({
             code: 'alias-out-of-scope',
-            message: `Alias "${aliasName}" is referenced outside its scope.`,
-            offset: tag.nameOffset,
-            length: aliasName.length,
+            message: `Alias "${reference.name}" is referenced outside its scope.`,
+            offset: reference.offset,
+            length: reference.name.length,
             severity: 'warning',
         });
     }
 
     return diagnostics;
+}
+
+function aliasReference(tag: Tag): { name: string; offset: number } | undefined {
+    if (
+        tag.kind !== 'variable' &&
+        tag.kind !== 'variable-meta' &&
+        tag.kind !== 'triple' &&
+        tag.kind !== 'unescaped'
+    ) return undefined;
+
+    if (tag.name.startsWith('@')) {
+        const segments = tag.name.slice(1).split('.');
+        if (segments.length !== 2 || !ITERATION_METADATA_NAMES.has(segments[1])) return undefined;
+        return { name: segments[0], offset: tag.nameOffset + 1 };
+    }
+
+    const name = tag.name.split('.')[0];
+    return name ? { name, offset: tag.nameOffset } : undefined;
 }
 
 function nameRange(tag: Tag): Pick<DiagnosticData, 'offset' | 'length'> {

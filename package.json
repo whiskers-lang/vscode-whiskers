@@ -2,7 +2,7 @@
   "name": "whiskers",
   "displayName": "Whiskers",
   "description": "Formatter and language support for Mustache and Whiskers templates",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "publisher": "whiskers-language-tools",
   "license": "MIT",
   "repository": {
