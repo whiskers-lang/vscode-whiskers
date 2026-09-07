@@ -1,8 +1,7 @@
 import * as vscode from 'vscode';
 import {
-    METADATA_COMPLETIONS,
     SIGIL_COMPLETIONS,
-    shouldOfferMetadataCompletions,
+    metadataCompletionsAt,
     shouldOfferSigilCompletions,
 } from './completionData';
 
@@ -13,9 +12,10 @@ export class WhiskersCompletionProvider implements vscode.CompletionItemProvider
     ): vscode.CompletionItem[] | undefined {
         const offset = document.offsetAt(position);
         const text = document.getText();
+        const metadataCompletions = metadataCompletionsAt(text, offset);
 
-        if (shouldOfferMetadataCompletions(text, offset)) {
-            return METADATA_COMPLETIONS.map((completion, index) => {
+        if (metadataCompletions.length > 0) {
+            return metadataCompletions.map((completion, index) => {
                 const item = new vscode.CompletionItem(
                     {
                         label: completion.label,

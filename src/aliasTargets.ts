@@ -1,4 +1,10 @@
 import { AliasDecl, Tag, parse } from './parser';
+import { METADATA_COMPLETIONS } from './completionData';
+
+const ITERATION_METADATA_NAMES = new Set(
+    METADATA_COMPLETIONS.filter(metadata => metadata.name !== 'root')
+        .map(metadata => metadata.name),
+);
 
 export interface TextRange {
     offset: number;
@@ -66,9 +72,14 @@ function aliasReference(
 ): { declaration: AliasDecl; offset: number; length: number } | undefined {
     if (!usesContextKeypath(tag)) return undefined;
 
+    const metadataSegments = tag.name.startsWith('@') ? tag.name.slice(1).split('.') : [];
+    const qualifiedMetadata = metadataSegments.length === 2 &&
+        ITERATION_METADATA_NAMES.has(metadataSegments[1]);
     const local = tag.name.startsWith('.');
-    const nameOffset = tag.nameOffset + (local ? 1 : 0);
-    const name = tag.name.slice(local ? 1 : 0).split('.')[0];
+    const nameOffset = tag.nameOffset + (qualifiedMetadata || local ? 1 : 0);
+    const name = qualifiedMetadata
+        ? metadataSegments[0]
+        : tag.name.slice(local ? 1 : 0).split('.')[0];
     if (!name) return undefined;
 
     const declaration = [...tag.scopeAliases]
@@ -81,6 +92,7 @@ function aliasReference(
 
 function usesContextKeypath(tag: Tag): boolean {
     return tag.kind === 'variable' ||
+        tag.kind === 'variable-meta' ||
         tag.kind === 'triple' ||
         tag.kind === 'unescaped' ||
         tag.kind === 'section-open' ||

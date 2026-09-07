@@ -12,9 +12,9 @@ them or provide their data context.
   section lambdas, multiple partials, and a delimiter change that is restored.
 - `simple.whiskers` introduces aliases, iteration metadata, dedicated presence
   and null checks, a section lambda, and a partial.
-- `example.whiskers` covers nested aliases, root and local scopes, all condition
-  sigils, static and dynamic partials, template inheritance, blocks, lambda
-  arguments, and alternate delimiters.
+- `example.whiskers` covers nested aliases, alias-qualified iteration metadata,
+  root and local scopes, all condition sigils, static and dynamic partials,
+  template inheritance, blocks, lambda arguments, and alternate delimiters.
 
 The remaining templates are partials or parent templates referenced by those
 entry points. Definition navigation can follow each static partial from its use

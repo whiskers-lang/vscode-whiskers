@@ -55,11 +55,26 @@ export function shouldOfferSigilCompletions(text: string, offset: number): boole
 }
 
 export function shouldOfferMetadataCompletions(text: string, offset: number): boolean {
+    return metadataCompletionsAt(text, offset).length > 0;
+}
+
+export function metadataCompletionsAt(
+    text: string,
+    offset: number,
+): readonly MetadataCompletionData[] {
     const [openDelimiter] = activeDelimiters(text, offset);
     const openOffset = text.lastIndexOf(openDelimiter, offset - openDelimiter.length);
-    if (openOffset === -1) return false;
+    if (openOffset === -1) return [];
     const tagPrefix = text.slice(openOffset + openDelimiter.length, offset);
-    return /^\s*(?:[#^*%~?/]\s*)?@[\w-]*$/.test(tagPrefix);
+    if (/^\s*(?:[#^*%~?/]\s*)?@[\w-]*$/.test(tagPrefix)) {
+        return METADATA_COMPLETIONS;
+    }
+
+    const qualified = /^\s*(?:[#^*%~?/]\s*)?@([A-Za-z_][A-Za-z0-9_-]*)\.[\w-]*$/.exec(tagPrefix);
+    if (!qualified || METADATA_COMPLETIONS.some(metadata => metadata.name === qualified[1])) {
+        return [];
+    }
+    return METADATA_COMPLETIONS.filter(metadata => metadata.name !== 'root');
 }
 
 function activeDelimiters(text: string, offset: number): [string, string] {

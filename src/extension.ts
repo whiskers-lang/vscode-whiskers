@@ -148,7 +148,7 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.languages.registerCompletionItemProvider(
             SELECTOR,
             new WhiskersCompletionProvider(),
-            '{', '%', '[', '(', '<', '@',
+            '{', '%', '[', '(', '<', '@', '.',
         ),
         vscode.languages.registerHoverProvider(
             SELECTOR,

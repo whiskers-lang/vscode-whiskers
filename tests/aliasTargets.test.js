@@ -72,6 +72,21 @@ test('resolves a dotted alias reference to its nearest declaration', () => {
     assert.equal(declaration.offset, template.indexOf(':item') + 1);
 });
 
+test('resolves and renames aliases used with qualified metadata', () => {
+    const template = '{{#rows:row}}{{@row.index}}{{/rows}}';
+    const declarationOffset = template.indexOf(':row') + 1;
+    const referenceOffset = template.indexOf('@row.index') + 2;
+    const fromDeclaration = findAliasRenameTarget(template, declarationOffset);
+    const fromReference = findAliasRenameTarget(template, referenceOffset);
+
+    assert.deepEqual(fromReference, fromDeclaration);
+    assert.deepEqual(fromDeclaration.references.map(range => sourceText(template, range)), ['row']);
+
+    const declaration = findAliasDeclaration(template, referenceOffset);
+    assert.equal(sourceText(template, declaration), 'row');
+    assert.equal(declaration.offset, declarationOffset);
+});
+
 test('validates alias names', () => {
     for (const name of ['item', 'line_item', 'line-item', '_item']) {
         assert.equal(isValidAliasName(name), true);
