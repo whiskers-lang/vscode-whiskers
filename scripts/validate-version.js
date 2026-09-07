@@ -66,6 +66,7 @@ function validateVersionBump(baseRef) {
     const publishedManifest = manifest => {
         const result = JSON.parse(JSON.stringify(manifest));
         delete result.version;
+        delete result.publisher;
         delete result.scripts;
         delete result.devDependencies;
         return result;
