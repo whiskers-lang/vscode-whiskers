@@ -1,0 +1,17 @@
+{
+  "name": "vscode-whiskers",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bookworm",
+  "postCreateCommand": "npm ci",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "window.title": "vscode-whiskers${separator}${localWorkspaceFolder}"
+      },
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "connor4312.nodejs-testing"
+      ]
+    }
+  },
+  "remoteUser": "node"
+}

@@ -26,6 +26,9 @@ are resolved from the containing workspace folder.
 
 ## Development
 
+Open the repository in its development container to use the pinned Node.js 20
+toolchain. The container installs the locked dependencies automatically.
+
 Install exactly the locked dependencies and run all checks:
 
 ```text
