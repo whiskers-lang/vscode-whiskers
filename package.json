@@ -127,6 +127,7 @@
     "lint": "eslint src tests scripts",
     "test": "npm run compile && node --test tests/*.test.js",
     "check": "npm run lint && npm test",
+    "check:version": "node scripts/validate-version.js",
     "package:check": "npm run check && vsce ls --no-dependencies | node scripts/validate-package.js",
     "package:vsix": "npm run package:check && vsce package --no-dependencies --skip-license"
   },
