@@ -9,7 +9,7 @@
         "--disable-extensions",
         "--user-data-dir=/tmp/vscode-whiskers-test",
         "--extensionDevelopmentPath=${workspaceFolder}",
-        "${workspaceFolder}/examples"
+        "${workspaceFolder}/.vscode/vscode-whiskers.code-workspace"
       ],
       "outFiles": ["${workspaceFolder}/out/**/*.js"]
     }

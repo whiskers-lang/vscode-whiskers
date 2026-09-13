@@ -5,7 +5,12 @@ const {
     TOKEN_MODS,
     TOKEN_TYPES,
 } = require('../out/semanticTokenData');
-const { COLOR_SCHEMES, resolveColorScheme } = require('../out/colorSchemeData');
+const {
+    COLOR_SCHEMES,
+    PRESET_PLAINTEXT_COLORS,
+    resolveColorScheme,
+    resolvePresetPlaintextColor,
+} = require('../out/colorSchemeData');
 
 test('classifies semantic token spans', () => {
     const template = [
@@ -20,17 +25,17 @@ test('classifies semantic token spans', () => {
         mods: token.mods,
     }));
 
-    assert.ok(tokens.some(token => token.text === '[[' && token.type === 'mustacheDelimiter'));
-    assert.ok(tokens.some(token => token.text === ']]' && token.type === 'mustacheDelimiter'));
-    assert.ok(tokens.some(token => token.text === '#' && token.type === 'mustacheSigil'));
-    assert.ok(tokens.some(token => token.text === '>' && token.type === 'mustacheSigil'));
-    assert.ok(tokens.some(token => token.text === '/' && token.type === 'mustacheSigil'));
-    assert.ok(tokens.some(token => token.text === 'items' && token.type === 'mustacheSection'));
-    assert.ok(tokens.some(token => token.text === 'name' && token.type === 'mustacheVariable'));
-    assert.ok(tokens.some(token => token.text === 'card' && token.type === 'mustachePartial'));
-    assert.ok(tokens.some(token => token.text === '@index' && token.type === 'mustacheMetadata'));
+    assert.ok(tokens.some(token => token.text === '[[' && token.type === 'whiskersDelimiter'));
+    assert.ok(tokens.some(token => token.text === ']]' && token.type === 'whiskersDelimiter'));
+    assert.ok(tokens.some(token => token.text === '#' && token.type === 'whiskersSigil'));
+    assert.ok(tokens.some(token => token.text === '>' && token.type === 'whiskersSigil'));
+    assert.ok(tokens.some(token => token.text === '/' && token.type === 'whiskersSigil'));
+    assert.ok(tokens.some(token => token.text === 'items' && token.type === 'whiskersSection'));
+    assert.ok(tokens.some(token => token.text === 'name' && token.type === 'whiskersVariable'));
+    assert.ok(tokens.some(token => token.text === 'card' && token.type === 'whiskersPartial'));
+    assert.ok(tokens.some(token => token.text === '@index' && token.type === 'whiskersMetadata'));
 
-    const aliases = tokens.filter(token => token.text === 'item' && token.type === 'parameter');
+    const aliases = tokens.filter(token => token.text === 'item' && token.type === 'whiskersAlias');
     assert.equal(aliases.length, 2);
     assert.equal(aliases[0].mods, 1 << TOKEN_MODS.indexOf('declaration'));
     assert.equal(aliases[1].mods, 0);
@@ -38,6 +43,7 @@ test('classifies semantic token spans', () => {
 
 test('distinguishes semantic template concepts', () => {
     const template = [
+        '{{! note }}',
         '{{title}}',
         '{{@root.site}}',
         '{{> card}}',
@@ -50,16 +56,17 @@ test('distinguishes semantic template concepts', () => {
         type: token.type,
     }));
 
-    assert.ok(categories.some(token => token.text === '{{' && token.type === 'mustacheDelimiter'));
-    assert.ok(categories.some(token => token.text === '#' && token.type === 'mustacheSigil'));
-    assert.ok(categories.some(token => token.text === 'title' && token.type === 'mustacheVariable'));
-    assert.ok(categories.some(token => token.text === '@root.site' && token.type === 'mustacheMetadata'));
-    assert.ok(categories.some(token => token.text === 'card' && token.type === 'mustachePartial'));
-    assert.ok(categories.some(token => token.text === 'items' && token.type === 'mustacheSection'));
+    assert.ok(categories.some(token => token.text === '{{' && token.type === 'whiskersDelimiter'));
+    assert.ok(categories.some(token => token.text === '{{! note }}' && token.type === 'whiskersComment'));
+    assert.ok(categories.some(token => token.text === '#' && token.type === 'whiskersSigil'));
+    assert.ok(categories.some(token => token.text === 'title' && token.type === 'whiskersVariable'));
+    assert.ok(categories.some(token => token.text === '@root.site' && token.type === 'whiskersMetadata'));
+    assert.ok(categories.some(token => token.text === 'card' && token.type === 'whiskersPartial'));
+    assert.ok(categories.some(token => token.text === 'items' && token.type === 'whiskersSection'));
     assert.equal(categories.filter(token => token.text === 'truncate').length, 2);
     assert.ok(categories
         .filter(token => token.text === 'truncate')
-        .every(token => token.type === 'mustacheLambda'));
+        .every(token => token.type === 'whiskersLambda'));
 });
 
 test('color presets cover every semantic token', () => {
@@ -69,11 +76,47 @@ test('color presets cover every semantic token', () => {
             assert.match(color, /^#[0-9a-f]{6}$/i);
         }
     }
+    for (const color of Object.values(PRESET_PLAINTEXT_COLORS)) {
+        assert.match(color, /^#[0-9a-f]{6}$/i);
+    }
+});
+
+test('comments remain green in every preset', () => {
+    for (const colors of Object.values(COLOR_SCHEMES)) {
+        const [red, green, blue] = colors.whiskersComment
+            .match(/[0-9a-f]{2}/gi)
+            .map(channel => parseInt(channel, 16));
+        assert.ok(green > red && green > blue, `${colors.whiskersComment} should be green`);
+    }
+});
+
+test('Cobalt provides blue template colors and an orange plaintext fallback', () => {
+    const { whiskersComment, ...colors } = COLOR_SCHEMES.cobalt;
+    assert.equal(whiskersComment, '#6f9f73');
+    for (const color of Object.values(colors)) {
+        const [red, green, blue] = color.match(/[0-9a-f]{2}/gi).map(channel => parseInt(channel, 16));
+        assert.ok(blue > green && green > red, `${color} should be blue-forward`);
+    }
+    assert.equal(PRESET_PLAINTEXT_COLORS.cobalt, '#d98b5f');
+    assert.equal(resolvePresetPlaintextColor('cobalt', false), '#d98b5f');
+    assert.equal(resolvePresetPlaintextColor('ember', false), undefined);
+    assert.equal(resolvePresetPlaintextColor('custom', false), undefined);
+});
+
+test('two-tone presets provide contrasting plaintext fallbacks', () => {
+    assert.deepEqual(Object.keys(PRESET_PLAINTEXT_COLORS), [
+        'cobalt',
+        'jade',
+        'violet',
+        'rose',
+    ]);
 });
 
 test('automatic color scheme selects Ember for dark and Paper for light', () => {
     assert.equal(resolveColorScheme('theme', false), 'ember');
     assert.equal(resolveColorScheme('theme', true), 'paper');
+    assert.equal(resolveColorScheme('custom', false), undefined);
+    assert.equal(resolveColorScheme('custom', true), undefined);
     assert.equal(resolveColorScheme('harbor', true), 'harbor');
     assert.equal(resolveColorScheme('signal', false), 'signal');
 });
@@ -85,10 +128,10 @@ test('classifies lambda arguments with custom delimiters', () => {
         type: token.type,
     }));
 
-    assert.equal(tokens.filter(token => token.text === 'aside' && token.type === 'mustacheStringArgument').length, 1);
-    assert.equal(tokens.filter(token => token.text === 'aside' && token.type === 'parameter').length, 1);
-    assert.ok(tokens.some(token => token.text === '"side panel"' && token.type === 'mustacheStringArgument'));
-    assert.ok(tokens.some(token => token.text === '2' && token.type === 'mustacheNumberArgument'));
-    assert.ok(tokens.some(token => token.text === '*' && token.type === 'mustacheSigil'));
-    assert.ok(tokens.some(token => token.text === 'page.depth' && token.type === 'mustacheVariable'));
+    assert.equal(tokens.filter(token => token.text === 'aside' && token.type === 'whiskersStringArgument').length, 1);
+    assert.equal(tokens.filter(token => token.text === 'aside' && token.type === 'whiskersAlias').length, 1);
+    assert.ok(tokens.some(token => token.text === '"side panel"' && token.type === 'whiskersStringArgument'));
+    assert.ok(tokens.some(token => token.text === '2' && token.type === 'whiskersNumberArgument'));
+    assert.ok(tokens.some(token => token.text === '*' && token.type === 'whiskersSigil'));
+    assert.ok(tokens.some(token => token.text === 'page.depth' && token.type === 'whiskersVariable'));
 });

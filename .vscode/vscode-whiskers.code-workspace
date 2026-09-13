@@ -1,0 +1,29 @@
+{
+    "folders": [
+        {
+            "path": ".."
+        }
+    ],
+    "settings": {
+        "whiskers.contentHighlighting": "plaintext",
+        "whiskers.plaintextColor": "#d19a66",
+        "whiskers.plaintextOpacity": 0.8,
+        "whiskers.templateOpacity": 1,
+        "whiskers.colorScheme": "custom",
+        "editor.semanticTokenColorCustomizations": {
+            "rules": {
+                "whiskersDelimiter": "#913232",
+                "whiskersComment": "#913232",
+                "whiskersSigil": "#913232",
+                "whiskersSection": "#913232",
+                "whiskersVariable": "#913232",
+                "whiskersMetadata": "#913232",
+                "whiskersPartial": "#913232",
+                "whiskersLambda": "#913232",
+                "whiskersStringArgument": "#913232",
+                "whiskersNumberArgument": "#913232",
+                "whiskersAlias": "#913232"
+            }
+        }
+    }
+}
