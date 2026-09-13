@@ -1,5 +1,9 @@
 import * as vscode from 'vscode';
 import {
+    ColorScheme,
+    resolvePresetPlaintextColor,
+} from './colorSchemeData';
+import {
     collectContentHighlightingRanges,
     normalizeOpacity,
     normalizePlaintextColor,
@@ -22,8 +26,15 @@ export class WhiskersContentHighlightingDecorations implements vscode.Disposable
             .get<ContentHighlighting>('contentHighlighting', 'default');
         if (mode === 'plaintext') {
             const opacity = normalizeOpacity(configuration.get<number>('plaintextOpacity', 0.8));
-            const color = normalizePlaintextColor(
+            const configuredColor = normalizePlaintextColor(
                 configuration.get<string | null>('plaintextColor'),
+            );
+            const themeKind = vscode.window.activeColorTheme.kind;
+            const isLightTheme = themeKind === vscode.ColorThemeKind.Light ||
+                themeKind === vscode.ColorThemeKind.HighContrastLight;
+            const color = configuredColor ?? resolvePresetPlaintextColor(
+                configuration.get<ColorScheme>('colorScheme', 'theme'),
+                isLightTheme,
             );
             editor.setDecorations(
                 this.plaintextDecorationFor(opacity, color),

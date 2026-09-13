@@ -8,10 +8,16 @@ folding, and document symbols.
 
 `whiskers.colorScheme` defaults to `theme`, which automatically uses Ember with
 dark and high-contrast-dark themes, and Paper with light and
-high-contrast-light themes. The `ember`, `harbor`, `paper`, and `signal` options
-pin the exact syntax palettes shown in the color study. The `custom` option
-applies no palette decorations, allowing the active theme and
+high-contrast-light themes. Dark presets include `ember`, `harbor`, `canopy`,
+and `afterglow`; light presets include `paper`, `signal`, and `solar`. The
+two-tone presets are Cobalt & Copper (`cobalt`), Jade & Clay (`jade`), Violet &
+Brass (`violet`), and Rose & Slate (`rose`). They pair a family of template
+colors with a contrasting generated-content fallback when Plain Text
+highlighting is enabled. The `custom` option applies no palette decorations,
+allowing the active theme and
 `editor.semanticTokenColorCustomizations` to control token colors.
+Comments remain green across all built-in palettes as a consistent semantic
+cue.
 
 Whiskers exposes `whiskersDelimiter`, `whiskersComment`, `whiskersSigil`,
 `whiskersSection`, `whiskersVariable`, `whiskersMetadata`, `whiskersPartial`,
@@ -27,7 +33,8 @@ Set `whiskers.contentHighlighting` to `plaintext` to display content outside
 Mustache tags using the editor's normal foreground color. The eye button in a
 Mustache or Whiskers editor title toggles between default and plain-text
 content highlighting for the workspace. `whiskers.plaintextColor` sets its
-foreground color and defaults to the editor foreground when empty.
+foreground color. When unset, it uses the selected preset's fallback if one
+exists, or the editor foreground otherwise.
 `whiskers.plaintextOpacity` controls the content opacity from `0` to `1` and
 defaults to `0.8`.
 `whiskers.templateOpacity` independently controls tag opacity and defaults to

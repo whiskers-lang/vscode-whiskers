@@ -125,15 +125,22 @@
       "properties": {
         "whiskers.colorScheme": {
           "type": "string",
-          "enum": ["theme", "custom", "ember", "harbor", "paper", "signal"],
-          "enumItemLabels": ["Automatic", "Custom", "Ember & Sea Glass", "Harbor Signal", "Paper Ledger", "Signal on White"],
+          "enum": ["theme", "custom", "ember", "harbor", "canopy", "afterglow", "paper", "signal", "solar", "cobalt", "jade", "violet", "rose"],
+          "enumItemLabels": ["Automatic", "Custom", "Ember & Sea Glass", "Harbor Signal", "Canopy Workshop", "Afterglow", "Paper Ledger", "Signal on White", "Solar Archive", "Cobalt & Copper", "Jade & Clay", "Violet & Brass", "Rose & Slate"],
           "markdownEnumDescriptions": [
             "Use Ember with dark themes and Paper with light themes.",
             "Use semantic token colors from the active VS Code theme and `editor.semanticTokenColorCustomizations`.",
             "Use the warm dark palette shown in the color study.",
             "Use the cool dark palette shown in the color study.",
+            "Use a botanical dark palette with jade, gold, and coral accents.",
+            "Use a vivid dark palette inspired by classic high-contrast editor colors.",
             "Use the warm light palette shown in the color study.",
-            "Use the crisp light palette shown in the color study."
+            "Use the crisp light palette shown in the color study.",
+            "Use a restrained light palette inspired by solarized print colors.",
+            "Use muted blue Mustache syntax and, in Plain Text mode, copper generated content.",
+            "Use muted green Mustache syntax and, in Plain Text mode, clay generated content.",
+            "Use muted violet Mustache syntax and, in Plain Text mode, brass generated content.",
+            "Use muted rose Mustache syntax and, in Plain Text mode, blue-gray generated content."
           ],
           "default": "theme",
           "scope": "resource",
@@ -152,7 +159,7 @@
           "format": "color-hex",
           "default": null,
           "scope": "resource",
-          "markdownDescription": "Controls the foreground color outside Mustache tags when `whiskers.contentHighlighting` is `plaintext`. Leave unset to use the editor foreground."
+          "markdownDescription": "Controls the foreground color outside Mustache tags when `whiskers.contentHighlighting` is `plaintext`. Leave unset to use the preset fallback (orange for Cobalt & Copper) or the editor foreground."
         },
         "whiskers.plaintextOpacity": {
           "type": "number",

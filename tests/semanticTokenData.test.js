@@ -5,7 +5,12 @@ const {
     TOKEN_MODS,
     TOKEN_TYPES,
 } = require('../out/semanticTokenData');
-const { COLOR_SCHEMES, resolveColorScheme } = require('../out/colorSchemeData');
+const {
+    COLOR_SCHEMES,
+    PRESET_PLAINTEXT_COLORS,
+    resolveColorScheme,
+    resolvePresetPlaintextColor,
+} = require('../out/colorSchemeData');
 
 test('classifies semantic token spans', () => {
     const template = [
@@ -71,6 +76,40 @@ test('color presets cover every semantic token', () => {
             assert.match(color, /^#[0-9a-f]{6}$/i);
         }
     }
+    for (const color of Object.values(PRESET_PLAINTEXT_COLORS)) {
+        assert.match(color, /^#[0-9a-f]{6}$/i);
+    }
+});
+
+test('comments remain green in every preset', () => {
+    for (const colors of Object.values(COLOR_SCHEMES)) {
+        const [red, green, blue] = colors.whiskersComment
+            .match(/[0-9a-f]{2}/gi)
+            .map(channel => parseInt(channel, 16));
+        assert.ok(green > red && green > blue, `${colors.whiskersComment} should be green`);
+    }
+});
+
+test('Cobalt provides blue template colors and an orange plaintext fallback', () => {
+    const { whiskersComment, ...colors } = COLOR_SCHEMES.cobalt;
+    assert.equal(whiskersComment, '#6f9f73');
+    for (const color of Object.values(colors)) {
+        const [red, green, blue] = color.match(/[0-9a-f]{2}/gi).map(channel => parseInt(channel, 16));
+        assert.ok(blue > green && green > red, `${color} should be blue-forward`);
+    }
+    assert.equal(PRESET_PLAINTEXT_COLORS.cobalt, '#d98b5f');
+    assert.equal(resolvePresetPlaintextColor('cobalt', false), '#d98b5f');
+    assert.equal(resolvePresetPlaintextColor('ember', false), undefined);
+    assert.equal(resolvePresetPlaintextColor('custom', false), undefined);
+});
+
+test('two-tone presets provide contrasting plaintext fallbacks', () => {
+    assert.deepEqual(Object.keys(PRESET_PLAINTEXT_COLORS), [
+        'cobalt',
+        'jade',
+        'violet',
+        'rose',
+    ]);
 });
 
 test('automatic color scheme selects Ember for dark and Paper for light', () => {
