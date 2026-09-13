@@ -1,50 +1,97 @@
 # Whiskers for VS Code
 
-Language support for Whiskers and Mustache templates, including formatting,
-semantic highlighting, diagnostics, navigation, completions, hovers, rename,
-folding, and document symbols.
+Rich language support for Mustache and Whiskers templates. Format templates,
+navigate partials and aliases, catch structural errors, and keep generated code
+visually distinct from template logic.
 
-## Colors
+Supports `.whiskers`, `.wsk`, `.mustache`, and `.mst` files.
 
-`whiskers.colorScheme` defaults to `theme`, which automatically uses Ember with
-dark and high-contrast-dark themes, and Paper with light and
-high-contrast-light themes. Dark presets include `ember`, `harbor`, `canopy`,
-and `afterglow`; light presets include `paper`, `signal`, and `solar`. The
-two-tone presets are Cobalt & Copper (`cobalt`), Jade & Clay (`jade`), Violet &
-Brass (`violet`), and Rose & Slate (`rose`). They pair a family of template
-colors with a contrasting generated-content fallback when Plain Text
-highlighting is enabled. The `custom` option applies no palette decorations,
-allowing the active theme and
-`editor.semanticTokenColorCustomizations` to control token colors.
-Comments remain green across all built-in palettes as a consistent semantic
-cue.
+## Features
 
-Whiskers exposes `whiskersDelimiter`, `whiskersComment`, `whiskersSigil`,
-`whiskersSection`, `whiskersVariable`, `whiskersMetadata`, `whiskersPartial`,
-`whiskersLambda`, `whiskersStringArgument`, and `whiskersNumberArgument`
-semantic token types. Named scope declarations and references use
-`whiskersAlias`, with declarations carrying the standard `declaration`
-modifier.
-Dynamic lambda arguments use `whiskersVariable`, with their `*` marker using
-`whiskersSigil`. Palette decorations intentionally take precedence over
-semantic-token theme rules.
+- Format complete documents or selected ranges.
+- Highlight variables, sections, metadata, aliases, partials, lambdas, and
+	arguments with semantic tokens.
+- Diagnose unmatched, mismatched, and unclosed sections; malformed delimiter
+	changes; and invalid or out-of-scope aliases.
+- Complete tag sigils and metadata, including alias-qualified metadata such as
+	`@item.index`.
+- Navigate to aliases and partial templates, with configurable template roots.
+- Rename aliases and all references within their scope.
+- Inspect syntax with hovers, folding ranges, and document symbols.
+- Use default embedded HTML highlighting or a focused Plain Text mode for
+	generated content.
 
-Set `whiskers.contentHighlighting` to `plaintext` to display content outside
-Mustache tags using the editor's normal foreground color. The eye button in a
-Mustache or Whiskers editor title toggles between default and plain-text
-content highlighting for the workspace. `whiskers.plaintextColor` sets its
-foreground color. When unset, it uses the selected preset's fallback if one
-exists, or the editor foreground otherwise.
-`whiskers.plaintextOpacity` controls the content opacity from `0` to `1` and
-defaults to `0.8`.
-`whiskers.templateOpacity` independently controls tag opacity and defaults to
-`1`.
+## Getting started
 
-## Template roots
+Open a supported template file and Whiskers activates automatically. Format it
+with **Format Document**, explore symbols from the Outline view, or use
+**Go to Definition** on aliases and static partials.
 
-Partial definition navigation checks `whiskers.templateRoots` first, then the
-current template directory and each parent directory. Relative configured roots
+Use the eye button in the editor title to switch generated content between
+embedded-language highlighting and Plain Text mode.
+
+For partial navigation, configure `whiskers.templateRoots` with directories to
+search before the current template directory and its parents. Relative paths
 are resolved from the containing workspace folder.
+
+## Color schemes
+
+The default **Automatic** scheme selects Ember for dark themes and Paper for
+light themes. You can pin any built-in palette in Settings:
+
+| Style | Palettes |
+| --- | --- |
+| Dark | Ember & Sea Glass, Harbor Signal, Canopy Workshop, Afterglow |
+| Light | Paper Ledger, Signal on White, Solar Archive |
+| Two-tone | Cobalt & Copper, Jade & Clay, Violet & Brass, Rose & Slate |
+
+Two-tone palettes pair template colors with a contrasting generated-content
+color when Plain Text mode is enabled.
+
+Choose **Custom** to let your active VS Code theme and
+`editor.semanticTokenColorCustomizations` control token colors without palette
+overrides.
+
+## Theme customization
+
+For complete theme control, select the **Custom** color scheme and assign colors
+to any of the semantic tokens below. Built-in palettes take precedence over
+these rules.
+
+```json
+{
+	"whiskers.colorScheme": "custom",
+	"whiskers.contentHighlighting": "plaintext",
+	"whiskers.plaintextColor": "#d19a66",
+	"whiskers.plaintextOpacity": 0.8,
+	"whiskers.templateOpacity": 1,
+	"editor.semanticTokenColorCustomizations": {
+		"rules": {
+			"whiskersDelimiter": "#78909c",
+			"whiskersComment": "#6f9f73",
+			"whiskersSigil": "#ef6c75",
+			"whiskersSection": "#e5c07b",
+			"whiskersVariable": "#4fc3f7",
+			"whiskersMetadata": "#98c379",
+			"whiskersPartial": "#c678dd",
+			"whiskersLambda": "#e06c9f",
+			"whiskersStringArgument": "#98c379",
+			"whiskersNumberArgument": "#d19a66",
+			"whiskersAlias": "#e5c07b"
+		}
+	}
+}
+```
+
+## Whiskers syntax
+
+Whiskers extends Mustache with named scope aliases, metadata, dedicated
+condition sigils, dynamic partials, template inheritance, blocks, lambda
+arguments, and alternate delimiters. The extension continues to support
+ordinary Mustache syntax in both language modes.
+
+See the [template examples](examples/README.md) for representative syntax and
+runtime-value expectations.
 
 ## Development
 
