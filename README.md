@@ -26,8 +26,10 @@ semantic-token theme rules.
 Set `whiskers.contentHighlighting` to `plaintext` to display content outside
 Mustache tags using the editor's normal foreground color. The eye button in a
 Mustache or Whiskers editor title toggles between default and plain-text
-content highlighting for the workspace. `whiskers.plaintextOpacity` controls
-the content opacity from `0` to `1` and defaults to `0.8`.
+content highlighting for the workspace. `whiskers.plaintextColor` sets its
+foreground color and defaults to the editor foreground when empty.
+`whiskers.plaintextOpacity` controls the content opacity from `0` to `1` and
+defaults to `0.8`.
 `whiskers.templateOpacity` independently controls tag opacity and defaults to
 `1`.
 

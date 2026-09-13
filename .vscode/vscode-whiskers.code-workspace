@@ -6,6 +6,7 @@
     ],
     "settings": {
         "whiskers.contentHighlighting": "plaintext",
+        "whiskers.plaintextColor": "#d19a66",
         "whiskers.plaintextOpacity": 0.8,
         "whiskers.templateOpacity": 1,
         "whiskers.colorScheme": "custom",

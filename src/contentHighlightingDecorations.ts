@@ -2,12 +2,13 @@ import * as vscode from 'vscode';
 import {
     collectContentHighlightingRanges,
     normalizeOpacity,
+    normalizePlaintextColor,
 } from './contentHighlightingData';
 
 export type ContentHighlighting = 'default' | 'plaintext';
 
 export class WhiskersContentHighlightingDecorations implements vscode.Disposable {
-    private readonly plaintextDecorations = new Map<number, vscode.TextEditorDecorationType>();
+    private readonly plaintextDecorations = new Map<string, vscode.TextEditorDecorationType>();
     private readonly templateDecorations = new Map<number, vscode.TextEditorDecorationType>();
 
     update(editor: vscode.TextEditor): void {
@@ -21,8 +22,11 @@ export class WhiskersContentHighlightingDecorations implements vscode.Disposable
             .get<ContentHighlighting>('contentHighlighting', 'default');
         if (mode === 'plaintext') {
             const opacity = normalizeOpacity(configuration.get<number>('plaintextOpacity', 0.8));
+            const color = normalizePlaintextColor(
+                configuration.get<string | null>('plaintextColor'),
+            );
             editor.setDecorations(
-                this.plaintextDecorationFor(opacity),
+                this.plaintextDecorationFor(opacity, color),
                 this.toRanges(editor.document, ranges.plaintext),
             );
         }
@@ -41,15 +45,19 @@ export class WhiskersContentHighlightingDecorations implements vscode.Disposable
         for (const decoration of this.templateDecorations.values()) decoration.dispose();
     }
 
-    private plaintextDecorationFor(opacity: number): vscode.TextEditorDecorationType {
-        const existing = this.plaintextDecorations.get(opacity);
+    private plaintextDecorationFor(
+        opacity: number,
+        color: string | undefined,
+    ): vscode.TextEditorDecorationType {
+        const key = `${color ?? 'editor.foreground'}:${opacity}`;
+        const existing = this.plaintextDecorations.get(key);
         if (existing) return existing;
 
         const decoration = vscode.window.createTextEditorDecorationType({
-            color: new vscode.ThemeColor('editor.foreground'),
+            color: color ?? new vscode.ThemeColor('editor.foreground'),
             opacity: opacity.toString(),
         });
-        this.plaintextDecorations.set(opacity, decoration);
+        this.plaintextDecorations.set(key, decoration);
         return decoration;
     }
 
@@ -66,7 +74,7 @@ export class WhiskersContentHighlightingDecorations implements vscode.Disposable
 
     private clear(
         editor: vscode.TextEditor,
-        decorations: Map<number, vscode.TextEditorDecorationType>,
+        decorations: Map<unknown, vscode.TextEditorDecorationType>,
     ): void {
         for (const decoration of decorations.values()) editor.setDecorations(decoration, []);
     }

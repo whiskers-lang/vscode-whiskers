@@ -14,6 +14,10 @@ export function normalizeOpacity(opacity: number): number {
     return Math.round(Math.min(1, Math.max(0, opacity)) * 100) / 100;
 }
 
+export function normalizePlaintextColor(color: string | null | undefined): string | undefined {
+    return color?.trim() || undefined;
+}
+
 export function collectPlaintextContentRanges(text: string): ContentRange[] {
     return collectContentHighlightingRanges(text).plaintext;
 }

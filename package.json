@@ -147,6 +147,13 @@
           "scope": "resource",
           "markdownDescription": "Controls highlighting outside Mustache tags. `default` uses the embedded HTML grammar; `plaintext` displays non-template content as ordinary editor text."
         },
+        "whiskers.plaintextColor": {
+          "type": ["string", "null"],
+          "format": "color-hex",
+          "default": null,
+          "scope": "resource",
+          "markdownDescription": "Controls the foreground color outside Mustache tags when `whiskers.contentHighlighting` is `plaintext`. Leave unset to use the editor foreground."
+        },
         "whiskers.plaintextOpacity": {
           "type": "number",
           "minimum": 0,

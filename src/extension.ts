@@ -150,6 +150,7 @@ export function activate(context: vscode.ExtensionContext): void {
             if (
                 !event.affectsConfiguration('whiskers.colorScheme') &&
                 !event.affectsConfiguration('whiskers.contentHighlighting') &&
+                !event.affectsConfiguration('whiskers.plaintextColor') &&
                 !event.affectsConfiguration('whiskers.plaintextOpacity') &&
                 !event.affectsConfiguration('whiskers.templateOpacity')
             ) return;

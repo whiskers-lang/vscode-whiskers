@@ -4,6 +4,7 @@ const {
     collectPlaintextContentRanges,
     collectTemplateRanges,
     normalizeOpacity,
+    normalizePlaintextColor,
 } = require('../out/contentHighlightingData');
 
 test('collects content outside Mustache tags', () => {
@@ -45,6 +46,13 @@ test('normalizes opacity to a bounded percentage', () => {
     assert.equal(normalizeOpacity(0.804), 0.8);
     assert.equal(normalizeOpacity(-1), 0);
     assert.equal(normalizeOpacity(2), 1);
+});
+
+test('normalizes optional plaintext colors', () => {
+    assert.equal(normalizePlaintextColor('  #d19a66  '), '#d19a66');
+    assert.equal(normalizePlaintextColor(''), undefined);
+    assert.equal(normalizePlaintextColor('   '), undefined);
+    assert.equal(normalizePlaintextColor(null), undefined);
 });
 
 function sourceText(template, range) {
