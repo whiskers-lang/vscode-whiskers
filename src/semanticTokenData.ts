@@ -1,16 +1,17 @@
 import { parse, AliasDecl, Tag } from './parser';
 
 export const TOKEN_TYPES = [
-    'mustacheDelimiter',
-    'mustacheSigil',
-    'mustacheSection',
-    'mustacheVariable',
-    'mustacheMetadata',
-    'mustachePartial',
-    'mustacheLambda',
-    'mustacheStringArgument',
-    'mustacheNumberArgument',
-    'parameter',
+    'whiskersDelimiter',
+    'whiskersComment',
+    'whiskersSigil',
+    'whiskersSection',
+    'whiskersVariable',
+    'whiskersMetadata',
+    'whiskersPartial',
+    'whiskersLambda',
+    'whiskersStringArgument',
+    'whiskersNumberArgument',
+    'whiskersAlias',
 ];
 export const TOKEN_MODS = ['declaration', 'depth1', 'depth2', 'depth3', 'depth4', 'depth5', 'depth6'];
 
@@ -28,42 +29,45 @@ export function collectSemanticTokens(text: string): SemanticTokenData[] {
     const sectionTypes: TokenType[] = [];
 
     for (const tag of parse(text)) {
-        if (tag.kind === 'comment') continue;
+        if (tag.kind === 'comment') {
+            push(pending, tag.tagOffset, tag.tagLength, 'whiskersComment', 0);
+            continue;
+        }
 
-        push(pending, tag.tagOffset, tag.openDelimLen, 'mustacheDelimiter', 0);
-        push(pending, tag.tagOffset + tag.tagLength - tag.closeDelimLen, tag.closeDelimLen, 'mustacheDelimiter', 0);
+        push(pending, tag.tagOffset, tag.openDelimLen, 'whiskersDelimiter', 0);
+        push(pending, tag.tagOffset + tag.tagLength - tag.closeDelimLen, tag.closeDelimLen, 'whiskersDelimiter', 0);
 
         if (tag.kind === 'set-delimiter') continue;
 
-        push(pending, tag.sigilOffset, tag.sigilLength, 'mustacheSigil', 0);
+        push(pending, tag.sigilOffset, tag.sigilLength, 'whiskersSigil', 0);
 
         if (tag.kind === 'section-open') {
-            const sectionType = tag.hasArguments ? 'mustacheLambda' : 'mustacheSection';
+            const sectionType = tag.hasArguments ? 'whiskersLambda' : 'whiskersSection';
             push(pending, tag.nameOffset, tag.nameLength,
                 sectionType, depthMod(tag.depth));
             sectionTypes.push(sectionType);
             for (const alias of tag.aliases) {
-                push(pending, alias.offset, alias.length, 'parameter', modBit('declaration'));
+                push(pending, alias.offset, alias.length, 'whiskersAlias', modBit('declaration'));
             }
             for (const argument of tag.arguments) {
                 if (argument.kind === 'dynamic') {
-                    push(pending, argument.sigilOffset ?? argument.offset, 1, 'mustacheSigil', 0);
-                    push(pending, argument.offset, argument.length, 'mustacheVariable', 0);
+                    push(pending, argument.sigilOffset ?? argument.offset, 1, 'whiskersSigil', 0);
+                    push(pending, argument.offset, argument.length, 'whiskersVariable', 0);
                 } else {
                     push(pending, argument.offset, argument.length,
-                        argument.kind === 'number' ? 'mustacheNumberArgument' : 'mustacheStringArgument', 0);
+                        argument.kind === 'number' ? 'whiskersNumberArgument' : 'whiskersStringArgument', 0);
                 }
             }
         } else if (tag.kind === 'section-close') {
-            const sectionType = sectionTypes.pop() ?? 'mustacheSection';
+            const sectionType = sectionTypes.pop() ?? 'whiskersSection';
             push(pending, tag.nameOffset, tag.nameLength, sectionType, depthMod(tag.depth));
         } else if (tag.kind === 'partial') {
-            push(pending, tag.nameOffset, tag.nameLength, 'mustachePartial', 0);
+            push(pending, tag.nameOffset, tag.nameLength, 'whiskersPartial', 0);
         } else if (tag.kind === 'variable-meta') {
-            push(pending, tag.nameOffset, tag.nameLength, 'mustacheMetadata', 0);
+            push(pending, tag.nameOffset, tag.nameLength, 'whiskersMetadata', 0);
         } else if (tag.kind === 'variable' || tag.kind === 'triple' || tag.kind === 'unescaped') {
             push(pending, tag.nameOffset, tag.nameLength,
-                isAlias(tag, tag.scopeAliases) ? 'parameter' : 'mustacheVariable', 0);
+                isAlias(tag, tag.scopeAliases) ? 'whiskersAlias' : 'whiskersVariable', 0);
         }
     }
 

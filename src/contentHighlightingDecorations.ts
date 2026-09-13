@@ -1,31 +1,80 @@
 import * as vscode from 'vscode';
-import { collectPlaintextContentRanges } from './contentHighlightingData';
+import {
+    collectContentHighlightingRanges,
+    normalizeOpacity,
+} from './contentHighlightingData';
 
 export type ContentHighlighting = 'default' | 'plaintext';
 
 export class WhiskersContentHighlightingDecorations implements vscode.Disposable {
-    private readonly decoration = vscode.window.createTextEditorDecorationType({
-        color: new vscode.ThemeColor('editor.foreground'),
-    });
+    private readonly plaintextDecorations = new Map<number, vscode.TextEditorDecorationType>();
+    private readonly templateDecorations = new Map<number, vscode.TextEditorDecorationType>();
 
     update(editor: vscode.TextEditor): void {
-        const mode = vscode.workspace
-            .getConfiguration('whiskers', editor.document.uri)
+        this.clear(editor, this.plaintextDecorations);
+        this.clear(editor, this.templateDecorations);
+
+        const configuration = vscode.workspace.getConfiguration('whiskers', editor.document.uri);
+        const text = editor.document.getText();
+        const ranges = collectContentHighlightingRanges(text);
+        const mode = configuration
             .get<ContentHighlighting>('contentHighlighting', 'default');
-        if (mode !== 'plaintext') {
-            editor.setDecorations(this.decoration, []);
-            return;
+        if (mode === 'plaintext') {
+            const opacity = normalizeOpacity(configuration.get<number>('plaintextOpacity', 0.8));
+            editor.setDecorations(
+                this.plaintextDecorationFor(opacity),
+                this.toRanges(editor.document, ranges.plaintext),
+            );
         }
 
-        const ranges = collectPlaintextContentRanges(editor.document.getText()).map(range =>
-            new vscode.Range(
-                editor.document.positionAt(range.offset),
-                editor.document.positionAt(range.offset + range.length),
-            ));
-        editor.setDecorations(this.decoration, ranges);
+        const templateOpacity = normalizeOpacity(configuration.get<number>('templateOpacity', 1));
+        if (templateOpacity < 1) {
+            editor.setDecorations(
+                this.templateDecorationFor(templateOpacity),
+                this.toRanges(editor.document, ranges.template),
+            );
+        }
     }
 
     dispose(): void {
-        this.decoration.dispose();
+        for (const decoration of this.plaintextDecorations.values()) decoration.dispose();
+        for (const decoration of this.templateDecorations.values()) decoration.dispose();
+    }
+
+    private plaintextDecorationFor(opacity: number): vscode.TextEditorDecorationType {
+        const existing = this.plaintextDecorations.get(opacity);
+        if (existing) return existing;
+
+        const decoration = vscode.window.createTextEditorDecorationType({
+            color: new vscode.ThemeColor('editor.foreground'),
+            opacity: opacity.toString(),
+        });
+        this.plaintextDecorations.set(opacity, decoration);
+        return decoration;
+    }
+
+    private templateDecorationFor(opacity: number): vscode.TextEditorDecorationType {
+        const existing = this.templateDecorations.get(opacity);
+        if (existing) return existing;
+
+        const decoration = vscode.window.createTextEditorDecorationType({
+            opacity: opacity.toString(),
+        });
+        this.templateDecorations.set(opacity, decoration);
+        return decoration;
+    }
+
+    private clear(
+        editor: vscode.TextEditor,
+        decorations: Map<number, vscode.TextEditorDecorationType>,
+    ): void {
+        for (const decoration of decorations.values()) editor.setDecorations(decoration, []);
+    }
+
+    private toRanges(document: vscode.TextDocument, ranges: { offset: number; length: number }[]): vscode.Range[] {
+        return ranges.map(range => new vscode.Range(
+            document.positionAt(range.offset),
+            document.positionAt(range.offset + range.length),
+        ));
     }
 }

@@ -1,13 +1,14 @@
 import * as vscode from 'vscode';
 import {
     COLOR_SCHEMES,
+    ColorPreset,
     ColorRole,
     ColorScheme,
     resolveColorScheme,
 } from './colorSchemeData';
 import { collectSemanticTokens, TOKEN_TYPES } from './semanticTokenData';
 
-const PRESETS = Object.keys(COLOR_SCHEMES) as Exclude<ColorScheme, 'theme'>[];
+const PRESETS = Object.keys(COLOR_SCHEMES) as ColorPreset[];
 export class WhiskersColorSchemeDecorations implements vscode.Disposable {
     private readonly decorations = new Map<string, vscode.TextEditorDecorationType>();
 
@@ -34,7 +35,7 @@ export class WhiskersColorSchemeDecorations implements vscode.Disposable {
         const isLightTheme = themeKind === vscode.ColorThemeKind.Light ||
             themeKind === vscode.ColorThemeKind.HighContrastLight;
         const preset = resolveColorScheme(configuredScheme, isLightTheme);
-        if (!PRESETS.includes(preset)) return;
+        if (!preset) return;
 
         const ranges = new Map<ColorRole, vscode.Range[]>();
         for (const token of collectSemanticTokens(editor.document.getText())) {

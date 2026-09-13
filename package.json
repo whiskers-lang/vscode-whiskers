@@ -65,28 +65,32 @@
     "semanticTokenScopes": [
       {
         "scopes": {
-          "mustacheDelimiter": ["support.constant.handlebars"],
-          "mustacheSigil": ["keyword.control.mustache"],
-          "mustacheSection": ["variable.other.mustache"],
-          "mustacheVariable": ["variable.other.mustache"],
-          "mustacheMetadata": ["support.variable.mustache"],
-          "mustachePartial": ["support.function.partial.mustache"],
-          "mustacheLambda": ["support.function.mustache"],
-          "mustacheStringArgument": ["string.quoted.double.mustache"],
-          "mustacheNumberArgument": ["constant.numeric.mustache"]
+          "whiskersDelimiter": ["support.constant.handlebars"],
+          "whiskersComment": ["comment.block.mustache"],
+          "whiskersSigil": ["keyword.control.mustache"],
+          "whiskersSection": ["variable.other.mustache"],
+          "whiskersVariable": ["variable.other.mustache"],
+          "whiskersMetadata": ["support.variable.mustache"],
+          "whiskersPartial": ["support.function.partial.mustache"],
+          "whiskersLambda": ["support.function.mustache"],
+          "whiskersStringArgument": ["string.quoted.double.mustache"],
+          "whiskersNumberArgument": ["constant.numeric.mustache"],
+          "whiskersAlias": ["variable.parameter.mustache"]
         }
       }
     ],
     "semanticTokenTypes": [
-      { "id": "mustacheDelimiter", "superType": "operator", "description": "A Mustache tag delimiter." },
-      { "id": "mustacheSigil", "superType": "keyword", "description": "A Mustache tag sigil." },
-      { "id": "mustacheSection", "superType": "variable", "description": "A Mustache section key." },
-      { "id": "mustacheVariable", "superType": "variable", "description": "A Mustache variable." },
-      { "id": "mustacheMetadata", "superType": "enumMember", "description": "A Whiskers metadata variable." },
-      { "id": "mustachePartial", "superType": "function", "description": "A Mustache partial template." },
-      { "id": "mustacheLambda", "superType": "function", "description": "A Whiskers lambda invocation." },
-      { "id": "mustacheStringArgument", "superType": "string", "description": "A quoted or unquoted Whiskers lambda string argument." },
-      { "id": "mustacheNumberArgument", "superType": "number", "description": "A Whiskers lambda numeric argument." }
+      { "id": "whiskersDelimiter", "superType": "operator", "description": "A Whiskers or Mustache tag delimiter." },
+      { "id": "whiskersComment", "superType": "comment", "description": "A Whiskers or Mustache comment." },
+      { "id": "whiskersSigil", "superType": "keyword", "description": "A Whiskers or Mustache tag sigil." },
+      { "id": "whiskersSection", "superType": "variable", "description": "A Whiskers or Mustache section key." },
+      { "id": "whiskersVariable", "superType": "variable", "description": "A Whiskers or Mustache variable." },
+      { "id": "whiskersMetadata", "superType": "enumMember", "description": "A Whiskers metadata variable." },
+      { "id": "whiskersPartial", "superType": "function", "description": "A Whiskers or Mustache partial template." },
+      { "id": "whiskersLambda", "superType": "function", "description": "A Whiskers lambda invocation." },
+      { "id": "whiskersStringArgument", "superType": "string", "description": "A quoted or unquoted Whiskers lambda string argument." },
+      { "id": "whiskersNumberArgument", "superType": "number", "description": "A Whiskers lambda numeric argument." },
+      { "id": "whiskersAlias", "superType": "variable", "description": "A Whiskers named scope alias." }
     ],
     "commands": [
       {
@@ -121,10 +125,11 @@
       "properties": {
         "whiskers.colorScheme": {
           "type": "string",
-          "enum": ["theme", "ember", "harbor", "paper", "signal"],
-          "enumItemLabels": ["Automatic", "Ember & Sea Glass", "Harbor Signal", "Paper Ledger", "Signal on White"],
+          "enum": ["theme", "custom", "ember", "harbor", "paper", "signal"],
+          "enumItemLabels": ["Automatic", "Custom", "Ember & Sea Glass", "Harbor Signal", "Paper Ledger", "Signal on White"],
           "markdownEnumDescriptions": [
             "Use Ember with dark themes and Paper with light themes.",
+            "Use semantic token colors from the active VS Code theme and `editor.semanticTokenColorCustomizations`.",
             "Use the warm dark palette shown in the color study.",
             "Use the cool dark palette shown in the color study.",
             "Use the warm light palette shown in the color study.",
@@ -132,7 +137,7 @@
           ],
           "default": "theme",
           "scope": "resource",
-          "markdownDescription": "Controls Whiskers syntax colors. `theme` automatically selects Ember for dark themes and Paper for light themes."
+          "markdownDescription": "Controls Whiskers syntax colors. `theme` automatically selects Ember for dark themes and Paper for light themes; `custom` uses VS Code semantic token colors without palette overrides."
         },
         "whiskers.contentHighlighting": {
           "type": "string",
@@ -141,6 +146,22 @@
           "default": "default",
           "scope": "resource",
           "markdownDescription": "Controls highlighting outside Mustache tags. `default` uses the embedded HTML grammar; `plaintext` displays non-template content as ordinary editor text."
+        },
+        "whiskers.plaintextOpacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.8,
+          "scope": "resource",
+          "markdownDescription": "Controls the opacity of content outside Mustache tags when `whiskers.contentHighlighting` is `plaintext`."
+        },
+        "whiskers.templateOpacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1,
+          "scope": "resource",
+          "markdownDescription": "Controls the opacity of Mustache and Whiskers tags."
         },
         "whiskers.templateRoots": {
           "type": "array",

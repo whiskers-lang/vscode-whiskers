@@ -149,7 +149,9 @@ export function activate(context: vscode.ExtensionContext): void {
         vscode.workspace.onDidChangeConfiguration(event => {
             if (
                 !event.affectsConfiguration('whiskers.colorScheme') &&
-                !event.affectsConfiguration('whiskers.contentHighlighting')
+                !event.affectsConfiguration('whiskers.contentHighlighting') &&
+                !event.affectsConfiguration('whiskers.plaintextOpacity') &&
+                !event.affectsConfiguration('whiskers.templateOpacity')
             ) return;
             vscode.window.visibleTextEditors.forEach(updateDecorations);
         }),
