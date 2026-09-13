@@ -18,6 +18,11 @@ Dynamic lambda arguments use `mustacheVariable`, with their `*` marker using
 `mustacheSigil`. Palette decorations intentionally take precedence over
 semantic-token theme rules.
 
+Set `whiskers.contentHighlighting` to `plaintext` to display content outside
+Mustache tags using the editor's normal foreground color. The eye button in a
+Mustache or Whiskers editor title toggles between default and plain-text
+content highlighting for the workspace.
+
 ## Template roots
 
 Partial definition navigation checks `whiskers.templateRoots` first, then the

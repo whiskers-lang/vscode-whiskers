@@ -88,6 +88,34 @@
       { "id": "mustacheStringArgument", "superType": "string", "description": "A quoted or unquoted Whiskers lambda string argument." },
       { "id": "mustacheNumberArgument", "superType": "number", "description": "A Whiskers lambda numeric argument." }
     ],
+    "commands": [
+      {
+        "command": "whiskers.enablePlaintextContentHighlighting",
+        "title": "Use Plain Text Content Highlighting",
+        "category": "Whiskers",
+        "icon": "$(eye-closed)"
+      },
+      {
+        "command": "whiskers.disablePlaintextContentHighlighting",
+        "title": "Use Default Content Highlighting",
+        "category": "Whiskers",
+        "icon": "$(eye)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "whiskers.enablePlaintextContentHighlighting",
+          "when": "(resourceLangId == whiskers || resourceLangId == mustache) && config.whiskers.contentHighlighting != plaintext",
+          "group": "navigation@100"
+        },
+        {
+          "command": "whiskers.disablePlaintextContentHighlighting",
+          "when": "(resourceLangId == whiskers || resourceLangId == mustache) && config.whiskers.contentHighlighting == plaintext",
+          "group": "navigation@100"
+        }
+      ]
+    },
     "configuration": {
       "title": "Whiskers",
       "properties": {
@@ -105,6 +133,14 @@
           "default": "theme",
           "scope": "resource",
           "markdownDescription": "Controls Whiskers syntax colors. `theme` automatically selects Ember for dark themes and Paper for light themes."
+        },
+        "whiskers.contentHighlighting": {
+          "type": "string",
+          "enum": ["default", "plaintext"],
+          "enumItemLabels": ["Default", "Plain Text"],
+          "default": "default",
+          "scope": "resource",
+          "markdownDescription": "Controls highlighting outside Mustache tags. `default` uses the embedded HTML grammar; `plaintext` displays non-template content as ordinary editor text."
         },
         "whiskers.templateRoots": {
           "type": "array",

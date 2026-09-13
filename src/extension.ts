@@ -10,6 +10,10 @@ import { WhiskersCompletionProvider } from './completions';
 import { WhiskersHoverProvider } from './hovers';
 import { WhiskersRenameProvider } from './rename';
 import { WhiskersColorSchemeDecorations } from './colorSchemeDecorations';
+import {
+    ContentHighlighting,
+    WhiskersContentHighlightingDecorations,
+} from './contentHighlightingDecorations';
 
 const LANGUAGES = ['mustache', 'whiskers'];
 const SELECTOR: vscode.DocumentSelector = LANGUAGES.map(language => ({ language }));
@@ -18,7 +22,6 @@ const SELECTOR: vscode.DocumentSelector = LANGUAGES.map(language => ({ language 
 const INACTIVE_DECOR = vscode.window.createTextEditorDecorationType({
     color: new vscode.ThemeColor('editor.foreground'),
 });
-
 
 function updateInactiveDecorations(editor: vscode.TextEditor): void {
     if (!LANGUAGES.includes(editor.document.languageId)) return;
@@ -97,10 +100,20 @@ export function activate(context: vscode.ExtensionContext): void {
     const formatter = new TemplateFormatter();
     const diagnostics = new WhiskersDiagnostics(LANGUAGES);
     const colorSchemes = new WhiskersColorSchemeDecorations();
+    const contentHighlighting = new WhiskersContentHighlightingDecorations();
     const updateDecorations = (editor: vscode.TextEditor): void => {
         if (!LANGUAGES.includes(editor.document.languageId)) return;
         colorSchemes.update(editor);
+        contentHighlighting.update(editor);
         updateInactiveDecorations(editor);
+    };
+    const setContentHighlighting = async (mode: ContentHighlighting): Promise<void> => {
+        const resource = vscode.window.activeTextEditor?.document.uri;
+        const target = vscode.workspace.workspaceFolders?.length
+            ? vscode.ConfigurationTarget.Workspace
+            : vscode.ConfigurationTarget.Global;
+        await vscode.workspace.getConfiguration('whiskers', resource)
+            .update('contentHighlighting', mode, target);
     };
     for (const language of LANGUAGES) {
         context.subscriptions.push(
@@ -120,6 +133,7 @@ export function activate(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
         INACTIVE_DECOR,
         colorSchemes,
+        contentHighlighting,
         diagnostics,
         vscode.window.onDidChangeVisibleTextEditors(editors => {
             editors.forEach(updateDecorations);
@@ -133,7 +147,10 @@ export function activate(context: vscode.ExtensionContext): void {
             if (editor) updateDecorations(editor);
         }),
         vscode.workspace.onDidChangeConfiguration(event => {
-            if (!event.affectsConfiguration('whiskers.colorScheme')) return;
+            if (
+                !event.affectsConfiguration('whiskers.colorScheme') &&
+                !event.affectsConfiguration('whiskers.contentHighlighting')
+            ) return;
             vscode.window.visibleTextEditors.forEach(updateDecorations);
         }),
         vscode.window.onDidChangeActiveColorTheme(() => {
@@ -145,6 +162,14 @@ export function activate(context: vscode.ExtensionContext): void {
     );
 
     context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'whiskers.enablePlaintextContentHighlighting',
+            () => setContentHighlighting('plaintext'),
+        ),
+        vscode.commands.registerCommand(
+            'whiskers.disablePlaintextContentHighlighting',
+            () => setContentHighlighting('default'),
+        ),
         vscode.languages.registerCompletionItemProvider(
             SELECTOR,
             new WhiskersCompletionProvider(),
