@@ -71,3 +71,18 @@ test('triple mustache remains default-delimiter only', () => {
 function anchored(pattern) {
     return new RegExp(`^(?:${pattern})$`);
 }
+
+test('interpolation lambdas share argument scopes without matching plain variables', () => {
+    const rule = grammar.repository['interpolation-lambda'];
+    const begin = new RegExp(rule.begin);
+    assert.match('{{foo "abc"}}', begin);
+    assert.match('{{foo 2 *name bare}}', begin);
+    assert.doesNotMatch('{{foo}}', begin);
+    assert.doesNotMatch('{{foo  }}', begin);
+    assert.doesNotMatch('{{#foo "abc"}}', begin);
+    assert.equal(rule.beginCaptures['2'].name, 'support.function.mustache');
+    assert.equal(rule.endCaptures['1'].name, 'support.constant.handlebars');
+    assert.deepEqual(rule.patterns, [{ include: '#section-arguments' }]);
+    assert.ok(grammar.patterns.findIndex(pattern => pattern.include === '#interpolation-lambda') <
+        grammar.patterns.findIndex(pattern => pattern.include === '#variable'));
+});

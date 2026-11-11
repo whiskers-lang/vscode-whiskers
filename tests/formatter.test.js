@@ -73,6 +73,12 @@ test('preserves CRLF line endings', () => {
     assert.equal(formatDocument(input, { insertSpaces: false, tabSize: 4 }), expected);
 });
 
+test('interpolation lambda arguments do not change indentation depth', () => {
+    const input = '{{#items}}\n{{foo "abc"}}\n{{name}}\n{{/items}}';
+    const expected = '{{#items}}\n  {{foo "abc"}}\n  {{name}}\n{{/items}}\n';
+    assert.equal(formatDocument(input, { insertSpaces: true, tabSize: 2 }), expected);
+});
+
 test('formats a range at its surrounding section depth', () => {
     const documentText = '{{#outer}}\n first  \n  second\n{{/outer}}\n';
     const rangeText = ' first  \n  second\n';

@@ -95,6 +95,42 @@ function singleTag(template) {
     return tags[0];
 }
 
+test('parses interpolation lambda arguments without opening a section', () => {
+    for (const [prefix, open, close] of [
+        ['', '{{', '}}'],
+        ['{{=[[ ]]=}}', '[[', ']]'],
+    ]) {
+        const template = prefix + `${open}#items:item${close}` +
+            `${open}foo "abc" 2 *item.name bare${close}` +
+            `${open}item${close}${open}/items${close}${open}after${close}`;
+        const tags = parse(template);
+        const lambda = tags.find(tag => tag.name === 'foo');
+        assert.equal(lambda.kind, 'variable');
+        assert.equal(lambda.hasArguments, true);
+        assert.equal(lambda.depth, 1);
+        assert.deepEqual(lambda.aliases, []);
+        assert.deepEqual(lambda.arguments.map(argument => ({
+            kind: argument.kind,
+            text: sourceSpan(template, argument.offset, argument.length),
+        })), [
+            { kind: 'string', text: '"abc"' },
+            { kind: 'number', text: '2' },
+            { kind: 'dynamic', text: 'item.name' },
+            { kind: 'string', text: 'bare' },
+        ]);
+        assert.equal(template[lambda.arguments[2].sigilOffset], '*');
+        assert.deepEqual(tags.find(tag => tag.name === 'item').scopeAliases.map(alias => alias.name), ['item']);
+        assert.equal(tags.find(tag => tag.name === 'after').depth, 0);
+        assert.deepEqual(tags.find(tag => tag.name === 'after').scopeAliases, []);
+    }
+});
+
+test('plain variables with trailing whitespace have no arguments', () => {
+    const tag = singleTag('{{foo  }}');
+    assert.equal(tag.hasArguments, false);
+    assert.deepEqual(tag.arguments, []);
+});
+
 function sourceSpan(template, offset, length) {
     return template.slice(offset, offset + length);
 }

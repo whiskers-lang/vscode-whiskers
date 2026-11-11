@@ -49,15 +49,6 @@ export function collectSemanticTokens(text: string): SemanticTokenData[] {
             for (const alias of tag.aliases) {
                 push(pending, alias.offset, alias.length, 'whiskersAlias', modBit('declaration'));
             }
-            for (const argument of tag.arguments) {
-                if (argument.kind === 'dynamic') {
-                    push(pending, argument.sigilOffset ?? argument.offset, 1, 'whiskersSigil', 0);
-                    push(pending, argument.offset, argument.length, 'whiskersVariable', 0);
-                } else {
-                    push(pending, argument.offset, argument.length,
-                        argument.kind === 'number' ? 'whiskersNumberArgument' : 'whiskersStringArgument', 0);
-                }
-            }
         } else if (tag.kind === 'section-close') {
             const sectionType = sectionTypes.pop() ?? 'whiskersSection';
             push(pending, tag.nameOffset, tag.nameLength, sectionType, depthMod(tag.depth));
@@ -67,7 +58,18 @@ export function collectSemanticTokens(text: string): SemanticTokenData[] {
             push(pending, tag.nameOffset, tag.nameLength, 'whiskersMetadata', 0);
         } else if (tag.kind === 'variable' || tag.kind === 'triple' || tag.kind === 'unescaped') {
             push(pending, tag.nameOffset, tag.nameLength,
-                isAlias(tag, tag.scopeAliases) ? 'whiskersAlias' : 'whiskersVariable', 0);
+                tag.hasArguments ? 'whiskersLambda'
+                    : isAlias(tag, tag.scopeAliases) ? 'whiskersAlias' : 'whiskersVariable', 0);
+        }
+
+        for (const argument of tag.arguments) {
+            if (argument.kind === 'dynamic') {
+                push(pending, argument.sigilOffset ?? argument.offset, 1, 'whiskersSigil', 0);
+                push(pending, argument.offset, argument.length, 'whiskersVariable', 0);
+            } else {
+                push(pending, argument.offset, argument.length,
+                    argument.kind === 'number' ? 'whiskersNumberArgument' : 'whiskersStringArgument', 0);
+            }
         }
     }
 
