@@ -135,3 +135,38 @@ test('classifies lambda arguments with custom delimiters', () => {
     assert.ok(tokens.some(token => token.text === '*' && token.type === 'whiskersSigil'));
     assert.ok(tokens.some(token => token.text === 'page.depth' && token.type === 'whiskersVariable'));
 });
+
+test('classifies interpolation lambdas without disturbing section token types', () => {
+    for (const [prefix, open, close] of [
+        ['', '{{', '}}'],
+        ['{{=[[ ]]=}}', '[[', ']]'],
+    ]) {
+        const template = prefix + [
+            `${open}#items${close}`,
+            `${open}foo "abc" 2 *name bare${close}`,
+            `${open}foo${close}`,
+            `${open}/items${close}`,
+        ].join('\n');
+        const tokens = collectSemanticTokens(template).map(token => ({
+            text: template.slice(token.offset, token.offset + token.length),
+            type: token.type,
+        }));
+        assert.deepEqual(tokens.filter(token => token.text === 'foo'), [
+            { text: 'foo', type: 'whiskersLambda' },
+            { text: 'foo', type: 'whiskersVariable' },
+        ]);
+        for (const [text, type] of [
+            ['"abc"', 'whiskersStringArgument'],
+            ['2', 'whiskersNumberArgument'],
+            ['*', 'whiskersSigil'],
+            ['name', 'whiskersVariable'],
+            ['bare', 'whiskersStringArgument'],
+        ]) {
+            assert.ok(tokens.some(token => token.text === text && token.type === type));
+        }
+        assert.deepEqual(tokens.filter(token => token.text === 'items'), [
+            { text: 'items', type: 'whiskersSection' },
+            { text: 'items', type: 'whiskersSection' },
+        ]);
+    }
+});

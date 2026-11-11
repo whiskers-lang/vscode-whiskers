@@ -221,9 +221,13 @@ function classifyTag(
         };
     }
 
-    // Plain variable
-    const [name] = readWord(inner, i);
-    return make('variable', '', name, i, i, 0);
+    const [name, j] = readWord(inner, i);
+    const tag = make('variable', '', name, i, i, 0);
+    if (j > i && skipWs(inner, j) > j) {
+        tag.arguments = readArguments(inner.slice(j), base + j);
+        tag.hasArguments = tag.arguments.length > 0;
+    }
+    return tag;
 }
 
 function readArguments(text: string, base: number): LambdaArgument[] {

@@ -2,7 +2,7 @@
   "name": "whiskers",
   "displayName": "Whiskers",
   "description": "Formatter and language support for Mustache and Whiskers templates",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "whiskers-language-tools",
   "license": "MIT",
   "repository": {
@@ -35,8 +35,14 @@
     "languages": [
       {
         "id": "whiskers",
-        "aliases": ["Whiskers", "whiskers"],
-        "extensions": [".whiskers", ".wsk"],
+        "aliases": [
+          "Whiskers",
+          "whiskers"
+        ],
+        "extensions": [
+          ".whiskers",
+          ".wsk"
+        ],
         "configuration": "./language-configuration.json",
         "icon": {
           "light": "./icons/mustache.svg",
@@ -45,8 +51,14 @@
       },
       {
         "id": "mustache",
-        "aliases": ["Mustache", "mustache"],
-        "extensions": [".mustache", ".mst"],
+        "aliases": [
+          "Mustache",
+          "mustache"
+        ],
+        "extensions": [
+          ".mustache",
+          ".mst"
+        ],
         "configuration": "./language-configuration.json"
       }
     ],
@@ -65,32 +77,98 @@
     "semanticTokenScopes": [
       {
         "scopes": {
-          "whiskersDelimiter": ["support.constant.handlebars"],
-          "whiskersComment": ["comment.block.mustache"],
-          "whiskersSigil": ["keyword.control.mustache"],
-          "whiskersSection": ["variable.other.mustache"],
-          "whiskersVariable": ["variable.other.mustache"],
-          "whiskersMetadata": ["support.variable.mustache"],
-          "whiskersPartial": ["support.function.partial.mustache"],
-          "whiskersLambda": ["support.function.mustache"],
-          "whiskersStringArgument": ["string.quoted.double.mustache"],
-          "whiskersNumberArgument": ["constant.numeric.mustache"],
-          "whiskersAlias": ["variable.parameter.mustache"]
+          "whiskersDelimiter": [
+            "support.constant.handlebars"
+          ],
+          "whiskersComment": [
+            "comment.block.mustache"
+          ],
+          "whiskersSigil": [
+            "keyword.control.mustache"
+          ],
+          "whiskersSection": [
+            "variable.other.mustache"
+          ],
+          "whiskersVariable": [
+            "variable.other.mustache"
+          ],
+          "whiskersMetadata": [
+            "support.variable.mustache"
+          ],
+          "whiskersPartial": [
+            "support.function.partial.mustache"
+          ],
+          "whiskersLambda": [
+            "support.function.mustache"
+          ],
+          "whiskersStringArgument": [
+            "string.quoted.double.mustache"
+          ],
+          "whiskersNumberArgument": [
+            "constant.numeric.mustache"
+          ],
+          "whiskersAlias": [
+            "variable.parameter.mustache"
+          ]
         }
       }
     ],
     "semanticTokenTypes": [
-      { "id": "whiskersDelimiter", "superType": "operator", "description": "A Whiskers or Mustache tag delimiter." },
-      { "id": "whiskersComment", "superType": "comment", "description": "A Whiskers or Mustache comment." },
-      { "id": "whiskersSigil", "superType": "keyword", "description": "A Whiskers or Mustache tag sigil." },
-      { "id": "whiskersSection", "superType": "variable", "description": "A Whiskers or Mustache section key." },
-      { "id": "whiskersVariable", "superType": "variable", "description": "A Whiskers or Mustache variable." },
-      { "id": "whiskersMetadata", "superType": "enumMember", "description": "A Whiskers metadata variable." },
-      { "id": "whiskersPartial", "superType": "function", "description": "A Whiskers or Mustache partial template." },
-      { "id": "whiskersLambda", "superType": "function", "description": "A Whiskers lambda invocation." },
-      { "id": "whiskersStringArgument", "superType": "string", "description": "A quoted or unquoted Whiskers lambda string argument." },
-      { "id": "whiskersNumberArgument", "superType": "number", "description": "A Whiskers lambda numeric argument." },
-      { "id": "whiskersAlias", "superType": "variable", "description": "A Whiskers named scope alias." }
+      {
+        "id": "whiskersDelimiter",
+        "superType": "operator",
+        "description": "A Whiskers or Mustache tag delimiter."
+      },
+      {
+        "id": "whiskersComment",
+        "superType": "comment",
+        "description": "A Whiskers or Mustache comment."
+      },
+      {
+        "id": "whiskersSigil",
+        "superType": "keyword",
+        "description": "A Whiskers or Mustache tag sigil."
+      },
+      {
+        "id": "whiskersSection",
+        "superType": "variable",
+        "description": "A Whiskers or Mustache section key."
+      },
+      {
+        "id": "whiskersVariable",
+        "superType": "variable",
+        "description": "A Whiskers or Mustache variable."
+      },
+      {
+        "id": "whiskersMetadata",
+        "superType": "enumMember",
+        "description": "A Whiskers metadata variable."
+      },
+      {
+        "id": "whiskersPartial",
+        "superType": "function",
+        "description": "A Whiskers or Mustache partial template."
+      },
+      {
+        "id": "whiskersLambda",
+        "superType": "function",
+        "description": "A Whiskers lambda invocation."
+      },
+      {
+        "id": "whiskersStringArgument",
+        "superType": "string",
+        "description": "A quoted or unquoted Whiskers lambda string argument."
+      },
+      {
+        "id": "whiskersNumberArgument",
+        "superType": "number",
+        "description": "A Whiskers lambda numeric argument."
+      },
+      {
+        "id": "whiskersAlias",
+        "superType": "variable",
+        "description": "A Whiskers named scope alias."
+      }
     ],
     "commands": [
       {
@@ -125,8 +203,36 @@
       "properties": {
         "whiskers.colorScheme": {
           "type": "string",
-          "enum": ["theme", "custom", "ember", "harbor", "canopy", "afterglow", "paper", "signal", "solar", "cobalt", "jade", "violet", "rose"],
-          "enumItemLabels": ["Automatic", "Custom", "Ember & Sea Glass", "Harbor Signal", "Canopy Workshop", "Afterglow", "Paper Ledger", "Signal on White", "Solar Archive", "Cobalt & Copper", "Jade & Clay", "Violet & Brass", "Rose & Slate"],
+          "enum": [
+            "theme",
+            "custom",
+            "ember",
+            "harbor",
+            "canopy",
+            "afterglow",
+            "paper",
+            "signal",
+            "solar",
+            "cobalt",
+            "jade",
+            "violet",
+            "rose"
+          ],
+          "enumItemLabels": [
+            "Automatic",
+            "Custom",
+            "Ember & Sea Glass",
+            "Harbor Signal",
+            "Canopy Workshop",
+            "Afterglow",
+            "Paper Ledger",
+            "Signal on White",
+            "Solar Archive",
+            "Cobalt & Copper",
+            "Jade & Clay",
+            "Violet & Brass",
+            "Rose & Slate"
+          ],
           "markdownEnumDescriptions": [
             "Use Ember with dark themes and Paper with light themes.",
             "Use semantic token colors from the active VS Code theme and `editor.semanticTokenColorCustomizations`.",
@@ -148,14 +254,23 @@
         },
         "whiskers.contentHighlighting": {
           "type": "string",
-          "enum": ["default", "plaintext"],
-          "enumItemLabels": ["Default", "Plain Text"],
+          "enum": [
+            "default",
+            "plaintext"
+          ],
+          "enumItemLabels": [
+            "Default",
+            "Plain Text"
+          ],
           "default": "default",
           "scope": "resource",
           "markdownDescription": "Controls highlighting outside Mustache tags. `default` uses the embedded HTML grammar; `plaintext` displays non-template content as ordinary editor text."
         },
         "whiskers.plaintextColor": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "color-hex",
           "default": null,
           "scope": "resource",
