@@ -30,6 +30,12 @@ with **Format Document**, explore symbols from the Outline view, or use
 Use the eye button in the editor title to switch generated content between
 embedded-language highlighting and Plain Text mode.
 
+After a delimiter change, inactive `{{...}}` expressions (such as Azure
+Pipelines `${{...}}` expressions) are generated content. In Plain Text mode
+they use the same content color and opacity as the surrounding text.
+Delimiter-change tags themselves highlight the `=` markers and new delimiter
+values as template syntax, including when restoring the default delimiters.
+
 For partial navigation, configure `whiskers.templateRoots` with directories to
 search before the current template directory and its parents. Relative paths
 are resolved from the containing workspace folder.

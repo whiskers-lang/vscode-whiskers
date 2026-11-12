@@ -37,7 +37,17 @@ export function collectSemanticTokens(text: string): SemanticTokenData[] {
         push(pending, tag.tagOffset, tag.openDelimLen, 'whiskersDelimiter', 0);
         push(pending, tag.tagOffset + tag.tagLength - tag.closeDelimLen, tag.closeDelimLen, 'whiskersDelimiter', 0);
 
-        if (tag.kind === 'set-delimiter') continue;
+        if (tag.kind === 'set-delimiter') {
+            const content = text.slice(
+                tag.sigilOffset,
+                tag.tagOffset + tag.tagLength - tag.closeDelimLen,
+            );
+            for (const match of content.matchAll(/=|[^\s=]+/g)) {
+                push(pending, tag.sigilOffset + match.index, match[0].length,
+                    match[0] === '=' ? 'whiskersSigil' : 'whiskersDelimiter', 0);
+            }
+            continue;
+        }
 
         push(pending, tag.sigilOffset, tag.sigilLength, 'whiskersSigil', 0);
 
