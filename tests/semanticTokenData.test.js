@@ -69,6 +69,79 @@ test('distinguishes semantic template concepts', () => {
         .every(token => token.type === 'whiskersLambda'));
 });
 
+for (const { name, prefix, source, delimiters } of [
+    {
+        name: 'changes default delimiters',
+        prefix: '',
+        source: '{{=<% %>=}}',
+        delimiters: ['{{', '<%', '%>', '}}'],
+    },
+    {
+        name: 'handles padded delimiter changes',
+        prefix: '',
+        source: '{{ \t=  <% \t%>  = \t}}',
+        delimiters: ['{{', '<%', '%>', '}}'],
+    },
+    {
+        name: 'restores default delimiters',
+        prefix: '{{=<% %>=}}\n',
+        source: '<%={{ }}=%>',
+        delimiters: ['<%', '{{', '}}', '%>'],
+    },
+    {
+        name: 'restores padded default delimiters',
+        prefix: '{{=<% %>=}}\n',
+        source: '<% = \t{{   }} \t= %>',
+        delimiters: ['<%', '{{', '}}', '%>'],
+    },
+    {
+        name: 'changes custom delimiters with unequal lengths',
+        prefix: '{{=[[ ]]=}}\n',
+        source: '[[= <!!! !> =]]',
+        delimiters: ['[[', '<!!!', '!>', ']]'],
+    },
+    {
+        name: 'handles a changed closing delimiter with the default opening delimiter',
+        prefix: '{{= {{ ]] =}}\n',
+        source: '{{= <% %> =]]',
+        delimiters: ['{{', '<%', '%>', ']]'],
+    },
+]) {
+    test(`classifies every delimiter-change component: ${name}`, () => {
+        const template = prefix + source;
+        const tokens = collectSemanticTokens(template).filter(token => token.offset >= prefix.length);
+        const [open, newOpen, newClose, close] = delimiters;
+        let position = 0;
+        const expected = [
+            [open, 'whiskersDelimiter'],
+            ['=', 'whiskersSigil'],
+            [newOpen, 'whiskersDelimiter'],
+            [newClose, 'whiskersDelimiter'],
+            ['=', 'whiskersSigil'],
+            [close, 'whiskersDelimiter'],
+        ].map(([text, type]) => {
+            const offset = source.indexOf(text, position);
+            assert.notEqual(offset, -1);
+            position = offset + text.length;
+            return { offset: prefix.length + offset, length: text.length, type, mods: 0 };
+        });
+        assert.deepEqual(tokens, expected);
+    });
+}
+
+test('delimiter-change tokens do not highlight inactive expressions as template syntax', () => {
+    const template = '{{=<% %>=}}\nvalue: ${{ parameters.name }}\n<%name%>\n<%={{ }}=%>';
+    const expressionStart = template.indexOf('${{');
+    const expressionEnd = template.indexOf('}}', expressionStart) + 2;
+    const tokens = collectSemanticTokens(template);
+
+    assert.ok(tokens.every(token =>
+        token.offset + token.length <= expressionStart || token.offset >= expressionEnd));
+    assert.ok(tokens.some(token =>
+        token.type === 'whiskersVariable' &&
+        template.slice(token.offset, token.offset + token.length) === 'name'));
+});
+
 test('color presets cover every semantic token', () => {
     for (const colors of Object.values(COLOR_SCHEMES)) {
         assert.deepEqual(Object.keys(colors), TOKEN_TYPES);

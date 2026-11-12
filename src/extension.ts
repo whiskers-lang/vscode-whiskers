@@ -25,6 +25,12 @@ const INACTIVE_DECOR = vscode.window.createTextEditorDecorationType({
 
 function updateInactiveDecorations(editor: vscode.TextEditor): void {
     if (!LANGUAGES.includes(editor.document.languageId)) return;
+    const mode = vscode.workspace.getConfiguration('whiskers', editor.document.uri)
+        .get<ContentHighlighting>('contentHighlighting', 'default');
+    if (mode === 'plaintext') {
+        editor.setDecorations(INACTIVE_DECOR, []);
+        return;
+    }
     const text = editor.document.getText();
     const tags = parse(text);
 

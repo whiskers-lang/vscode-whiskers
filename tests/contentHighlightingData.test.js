@@ -25,6 +25,19 @@ test('collects content around adjacent tags and custom delimiters', () => {
     assert.deepEqual(ranges.map(range => sourceText(template, range)), ['start', 'middle', 'end']);
 });
 
+test('inactive Azure expressions share the surrounding generated-content range', () => {
+    const template = '{{=<% %>=}}\nvalue: ${{ parameters.name }}\n<%name%>\n';
+
+    assert.deepEqual(collectPlaintextContentRanges(template).map(range => sourceText(template, range)), [
+        '\nvalue: ${{ parameters.name }}\n',
+        '\n',
+    ]);
+    assert.deepEqual(collectTemplateRanges(template).map(range => sourceText(template, range)), [
+        '{{=<% %>=}}',
+        '<%name%>',
+    ]);
+});
+
 test('collects Mustache tags without surrounding content', () => {
     const template = 'start{{name}}{{=<% %>=}}middle<%@index%>end';
     const ranges = collectTemplateRanges(template);
