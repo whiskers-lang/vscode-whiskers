@@ -23,6 +23,39 @@ test('reports malformed delimiter changes', () => {
     }
 });
 
+test('rejects bare punctuation arguments in every lambda tag form', () => {
+    for (const template of [
+        '{{#lambdas.stripTrailing , }}body{{/lambdas.stripTrailing}}',
+        '{{fn , }}',
+        '{{{fn , }}}',
+        '{{& fn , }}',
+        '{{=[[ ]]=}}[[fn , ]]',
+        '{{fn foo,bar}}',
+    ]) {
+        const diagnostics = collectDiagnostics(template);
+        assert.equal(diagnostics.length, 1);
+        assert.equal(diagnostics[0].code, 'invalid-lambda-argument');
+        assert.equal(diagnostics[0].severity, 'error');
+        assert.equal(diagnostics[0].offset, template.indexOf(','));
+        assert.equal(sourceText(template, diagnostics[0]), ',');
+        assert.match(diagnostics[0].message, /Quote punctuation literals/);
+    }
+});
+
+test('allows quoted punctuation and existing literal and dynamic arguments', () => {
+    for (const template of [
+        '{{#lambdas.stripTrailing ","  }}body{{/lambdas.stripTrailing}}',
+        '{{fn "," bare foo-bar _value 42 3.14 *user.name *@root.value}}',
+        '{{{fn ","}}}',
+        '{{& fn ","}}',
+        '{{=[[ ]]=}}[[fn ","]]',
+        '{{! bare punctuation , ; ! is comment text }}',
+        'plain punctuation , ; ! outside tags',
+    ]) {
+        assert.deepEqual(collectDiagnostics(template), []);
+    }
+});
+
 test('reports an alias referenced outside its scope', () => {
     const template = '{{#items:item}}{{item.name}}{{/items}}{{item.name}}';
     const diagnostics = collectDiagnostics(template);

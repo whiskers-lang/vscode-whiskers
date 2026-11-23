@@ -12,7 +12,8 @@ Supports `.whiskers`, `.wsk`, `.mustache`, and `.mst` files.
 - Highlight variables, sections, metadata, aliases, partials, lambdas, and
 	arguments with semantic tokens.
 - Diagnose unmatched, mismatched, and unclosed sections; malformed delimiter
-	changes; and invalid or out-of-scope aliases.
+	changes; invalid or out-of-scope aliases; and unsupported punctuation in lambda
+	arguments (use `","`, not a bare comma).
 - Complete tag sigils and metadata, including alias-qualified metadata such as
 	`@item.index`.
 - Navigate to aliases and partial templates, with configurable template roots.

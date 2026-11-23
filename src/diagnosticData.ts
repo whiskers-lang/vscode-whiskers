@@ -7,7 +7,8 @@ export type DiagnosticCode =
     | 'mismatched-section'
     | 'malformed-delimiter-change'
     | 'duplicate-alias'
-    | 'alias-out-of-scope';
+    | 'alias-out-of-scope'
+    | 'invalid-lambda-argument';
 
 export interface DiagnosticData {
     code: DiagnosticCode;
@@ -28,6 +29,18 @@ export function collectDiagnostics(text: string): DiagnosticData[] {
     const diagnostics = collectSectionDiagnostics(tags);
     diagnostics.push(...collectDelimiterDiagnostics(text));
     diagnostics.push(...collectAliasDiagnostics(tags));
+    for (const tag of tags) {
+        for (const argument of tag.arguments) {
+            if (argument.kind !== 'invalid') continue;
+            diagnostics.push({
+                code: 'invalid-lambda-argument',
+                message: `Unexpected "${text.slice(argument.offset, argument.offset + argument.length)}" in lambda arguments. Quote punctuation literals, for example ",".`,
+                offset: argument.offset,
+                length: argument.length,
+                severity: 'error',
+            });
+        }
+    }
     return diagnostics.sort((left, right) => left.offset - right.offset);
 }
 
