@@ -11,7 +11,7 @@ export interface AliasDecl {
 }
 
 export interface LambdaArgument {
-    kind: 'string' | 'number' | 'dynamic';
+    kind: 'string' | 'number' | 'dynamic' | 'invalid';
     offset: number;
     length: number;
     sigilOffset?: number;
@@ -62,15 +62,16 @@ export function parse(text: string): Tag[] {
             const ci = text.indexOf('}}}', openIdx + 3);
             if (ci === -1) break;
             const inner = text.slice(openIdx + 3, ci);
-            const trimmed = inner.trim();
             const nameOff = openIdx + 3 + (inner.length - inner.trimStart().length);
+            const [name, argumentStart] = readWord(inner, nameOff - openIdx - 3);
+            const arguments_ = readArguments(inner.slice(argumentStart), openIdx + 3 + argumentStart);
             tags.push({
-                kind: 'triple', sigil: '{{{', name: trimmed,
+                kind: 'triple', sigil: '{{{', name,
                 sigilOffset: openIdx, sigilLength: 0,
-                nameOffset: nameOff, nameLength: trimmed.length,
+                nameOffset: nameOff, nameLength: name.length,
                 tagOffset: openIdx, tagLength: ci + 3 - openIdx,
                 openDelimLen: 3, closeDelimLen: 3, customDelim: false,
-                depth, hasArguments: false, arguments: [], aliases: [], scopeAliases: currentAliases(),
+                depth, hasArguments: arguments_.length > 0, arguments: arguments_, aliases: [], scopeAliases: currentAliases(),
             });
             pos = ci + 3;
             continue;
@@ -163,8 +164,11 @@ function classifyTag(
     if (first === '&') {
         const sigilI = i;
         i = skipWs(inner, i + 1);
-        const [name] = readWord(inner, i);
-        return make('unescaped', '&', name, i, sigilI);
+        const [name, j] = readWord(inner, i);
+        const tag = make('unescaped', '&', name, i, sigilI);
+        tag.arguments = readArguments(inner.slice(j), base + j);
+        tag.hasArguments = tag.arguments.length > 0;
+        return tag;
     }
 
     if (first === '>') {
@@ -223,7 +227,7 @@ function classifyTag(
 
     const [name, j] = readWord(inner, i);
     const tag = make('variable', '', name, i, i, 0);
-    if (j > i && skipWs(inner, j) > j) {
+    if (j > i) {
         tag.arguments = readArguments(inner.slice(j), base + j);
         tag.hasArguments = tag.arguments.length > 0;
     }
@@ -252,17 +256,22 @@ function readArguments(text: string, base: number): LambdaArgument[] {
                     kind: 'dynamic', offset: base + valueStart, length: i - valueStart,
                     sigilOffset: base + start,
                 });
+            } else {
+                arguments_.push({ kind: 'invalid', offset: base + start, length: 1 });
             }
         } else if (/\d/.test(text[i])) {
-            while (i < text.length && /[\d.]/.test(text[i])) i++;
-            arguments_.push({ kind: 'number', offset: base + start, length: i - start });
-        } else {
-            while (i < text.length && /[\w-]/.test(text[i])) i++;
-            if (i > start) {
-                arguments_.push({ kind: 'string', offset: base + start, length: i - start });
-            } else {
+            while (i < text.length && /\d/.test(text[i])) i++;
+            if (text[i] === '.' && /\d/.test(text[i + 1] ?? '')) {
                 i++;
+                while (i < text.length && /\d/.test(text[i])) i++;
             }
+            arguments_.push({ kind: 'number', offset: base + start, length: i - start });
+        } else if (/[A-Za-z_]/.test(text[i])) {
+            while (i < text.length && /[\w-]/.test(text[i])) i++;
+            arguments_.push({ kind: 'string', offset: base + start, length: i - start });
+        } else {
+            arguments_.push({ kind: 'invalid', offset: base + start, length: 1 });
+            i++;
         }
     }
 

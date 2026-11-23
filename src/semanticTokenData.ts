@@ -73,6 +73,7 @@ export function collectSemanticTokens(text: string): SemanticTokenData[] {
         }
 
         for (const argument of tag.arguments) {
+            if (argument.kind === 'invalid') continue;
             if (argument.kind === 'dynamic') {
                 push(pending, argument.sigilOffset ?? argument.offset, 1, 'whiskersSigil', 0);
                 push(pending, argument.offset, argument.length, 'whiskersVariable', 0);

@@ -12,6 +12,16 @@ const {
     resolvePresetPlaintextColor,
 } = require('../out/colorSchemeData');
 
+test('keeps invalid punctuation visible as an invalid lambda rather than a plain section', () => {
+    const template = '{{#lambdas.stripTrailing , }}body{{/lambdas.stripTrailing}}';
+    const tokens = collectSemanticTokens(template);
+    const names = tokens.filter(token =>
+        template.slice(token.offset, token.offset + token.length) === 'lambdas.stripTrailing');
+    assert.equal(names.length, 2);
+    assert.ok(names.every(token => token.type === 'whiskersLambda'));
+    assert.ok(!tokens.some(token => token.offset === template.indexOf(',')));
+});
+
 test('classifies semantic token spans', () => {
     const template = [
         '{{=[[ ]]=}}',
